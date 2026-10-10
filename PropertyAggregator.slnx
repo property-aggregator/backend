@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PropertyAggregator.Api/PropertyAggregator.Api.csproj" />
+    <Project Path="src/PropertyAggregator.AppHost/PropertyAggregator.AppHost.csproj" />
+    <Project Path="src/PropertyAggregator.Application/PropertyAggregator.Application.csproj" />
+    <Project Path="src/PropertyAggregator.Domain/PropertyAggregator.Domain.csproj" />
+    <Project Path="src/PropertyAggregator.Infrastructure/PropertyAggregator.Infrastructure.csproj" />
+    <Project Path="src/PropertyAggregator.ServiceDefaults/PropertyAggregator.ServiceDefaults.csproj" />
+    <Project Path="src/PropertyAggregator.Worker/PropertyAggregator.Worker.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PropertyAggregator.IntegrationTests/PropertyAggregator.IntegrationTests.csproj" />
+    <Project Path="tests/PropertyAggregator.UnitTests/PropertyAggregator.UnitTests.csproj" />
+  </Folder>
+</Solution>

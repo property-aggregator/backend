@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+		<PackageReference Include="Scalar.AspNetCore" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\PropertyAggregator.Application\PropertyAggregator.Application.csproj" />
+		<ProjectReference Include="..\PropertyAggregator.Infrastructure\PropertyAggregator.Infrastructure.csproj" />
+		<ProjectReference Include="..\PropertyAggregator.ServiceDefaults\PropertyAggregator.ServiceDefaults.csproj" />
+	</ItemGroup>
+
+</Project>
