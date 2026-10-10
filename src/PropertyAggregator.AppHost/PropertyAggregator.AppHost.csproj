@@ -1,0 +1,14 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.6.1">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<AspireUseCliBundle>true</AspireUseCliBundle>
+		<UserSecretsId>c14a54a3-0ac9-4536-9584-4d804f3f880d</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\PropertyAggregator.Api\PropertyAggregator.Api.csproj" />
+		<ProjectReference Include="..\PropertyAggregator.Worker\PropertyAggregator.Worker.csproj" />
+	</ItemGroup>
+
+</Project>
