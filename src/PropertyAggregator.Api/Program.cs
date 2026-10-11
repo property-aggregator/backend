@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using PropertyAggregator.Infrastructure;
 using PropertyAggregator.Infrastructure.Health;
 using Scalar.AspNetCore;
 
@@ -6,6 +7,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.Services.AddOpenApi();
+builder.Services.AddPersistence();
 
 builder.Services.AddHealthChecks()
 	.AddCheck<DatabaseHealthCheck>("custom-sql", HealthStatus.Unhealthy);
