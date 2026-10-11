@@ -65,6 +65,24 @@ and stores the offers and exposes them through an HTTP API.
 | `http://localhost:5209/health` | Health check, returns `Healthy` or `Unhealthy` (503) |
 | `http://localhost:15032` | Aspire dashboard |
 
+## Database migrations
+
+Migrations are stored in `src/PropertyAggregator.Infrastructure/Persistence/Migrations`
+and committed to the repository. Restore the EF Core CLI once with `dotnet tool restore`.
+
+Apply migrations (PostgreSQL has to be running):
+
+```bash
+dotnet ef database update --project src/PropertyAggregator.Infrastructure --startup-project src/PropertyAggregator.Api
+```
+
+After changing the model, add a migration, apply it, and commit it together with the change:
+
+```bash
+dotnet ef migrations add <MigrationName> --project src/PropertyAggregator.Infrastructure --startup-project src/PropertyAggregator.Api --output-dir Persistence/Migrations
+dotnet ef database update --project src/PropertyAggregator.Infrastructure --startup-project src/PropertyAggregator.Api
+```
+
 ## Configuration
 
 The application reads its settings from environment variables through
