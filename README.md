@@ -19,8 +19,7 @@ and stores the offers and exposes them through an HTTP API.
 | `PropertyAggregator.Application` | Use cases and message contracts |
 | `PropertyAggregator.Domain` | Domain model |
 | `PropertyAggregator.Infrastructure` | Database, messaging, health checks, environment access |
-| `PropertyAggregator.ServiceDefaults` | Shared Aspire defaults: OpenTelemetry, health endpoint, HTTP resilience |
-| `PropertyAggregator.AppHost` | .NET Aspire host that starts Api and Worker locally |
+| `PropertyAggregator.ServiceDefaults` | Shared defaults: OpenTelemetry, health endpoint, HTTP resilience |
 | `tests/` | Unit and integration tests |
 
 ## Requirements
@@ -43,17 +42,13 @@ and stores the offers and exposes them through an HTTP API.
    docker compose up -d rabbitmq
    ```
 
-3. Start the backend through Aspire:
+3. Start the backend: run `PropertyAggregator.Api` and `PropertyAggregator.Worker`
+   from the IDE (a compound run configuration starts both), or in two terminals:
 
    ```bash
-   dotnet run --project src/PropertyAggregator.AppHost
+   dotnet run --project src/PropertyAggregator.Api
+   dotnet run --project src/PropertyAggregator.Worker
    ```
-
-   The Aspire dashboard opens in the browser (`http://localhost:15032`). It lists
-   `api` and `worker` with their state and logs.
-
-   Alternatively, run a single project from the IDE or with
-   `dotnet run --project src/PropertyAggregator.Api`.
 
 ### Useful addresses
 
@@ -63,12 +58,21 @@ and stores the offers and exposes them through an HTTP API.
 | `http://localhost:5209/scalar/v1` | API documentation (Scalar) |
 | `http://localhost:5209/openapi/v1.json` | OpenAPI document |
 | `http://localhost:5209/health` | Health check, returns `Healthy` or `Unhealthy` (503) |
-| `http://localhost:15032` | Aspire dashboard |
 
 ## Database migrations
 
 Migrations are stored in `src/PropertyAggregator.Infrastructure/Persistence/Migrations`
 and committed to the repository. Restore the EF Core CLI once with `dotnet tool restore`.
+
+`dotnet ef` does not read `launchSettings.json`, so set the connection string in the
+shell first (same value as in `docker-compose.yml`).
+The variable lasts only for the current terminal session.
+
+PowerShell:
+
+```powershell
+$env:ConnectionStrings__DefaultConnection = "Host=localhost;Port=5432;Database=property_aggregator;Username=postgres;Password=postgres"
+```
 
 Apply migrations (PostgreSQL has to be running):
 

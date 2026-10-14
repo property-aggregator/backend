@@ -16,6 +16,8 @@ public static class ServiceCollectionExtensions
 
 		services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
+		services.AddHealthChecks().AddDbContextCheck<AppDbContext>("database");
+
 		return services;
 	}
 }

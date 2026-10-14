@@ -1,7 +1,6 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/PropertyAggregator.Api/PropertyAggregator.Api.csproj" />
-    <Project Path="src/PropertyAggregator.AppHost/PropertyAggregator.AppHost.csproj" />
     <Project Path="src/PropertyAggregator.Application/PropertyAggregator.Application.csproj" />
     <Project Path="src/PropertyAggregator.Domain/PropertyAggregator.Domain.csproj" />
     <Project Path="src/PropertyAggregator.Infrastructure/PropertyAggregator.Infrastructure.csproj" />
