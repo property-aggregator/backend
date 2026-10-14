@@ -11,7 +11,7 @@
 	</ItemGroup>
 
 	<ItemGroup Label="Infrastructure">
-		<PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="10.0.12" />
+		<PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.12" />
 		<PackageVersion Include="Npgsql" Version="10.0.3" />
 	</ItemGroup>
 
@@ -23,7 +23,7 @@
 		<PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="10.0.3" />
 	</ItemGroup>
 
-	<ItemGroup Label="Aspire / ServiceDefaults">
+	<ItemGroup Label="ServiceDefaults">
 		<PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.10.0" />
 		<PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.10.0" />
 		<PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.17.0" />
