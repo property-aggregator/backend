@@ -2,10 +2,6 @@ using PropertyAggregator.Domain.Enums;
 
 namespace PropertyAggregator.Domain.Models.Statistics;
 
-/// <summary>
-/// Read model with average and median price per m² for a location and offer type.
-/// Recalculated by a scheduled job with raw SQL. A null location level means "all" at that level.
-/// </summary>
 public sealed class PriceStatistic
 {
 	public Guid Id { get; init; }
