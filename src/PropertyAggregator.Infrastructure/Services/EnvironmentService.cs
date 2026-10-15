@@ -11,6 +11,9 @@ public static class EnvironmentService
 	public static string RabbitMqQueue => GetEnvironmentVariable("RABBITMQ_QUEUE");
 	public static string RabbitMqExchange => GetEnvironmentVariable("RABBITMQ_EXCHANGE");
 
+	public static string NominatimBaseUrl => GetEnvironmentVariable("NOMINATIM_BASE_URL");
+	public static string NominatimUserAgent => GetEnvironmentVariable("NOMINATIM_USER_AGENT");
+
 	private static string GetEnvironmentVariable(string variable)
 	{
 		string? value = Environment.GetEnvironmentVariable(variable);
