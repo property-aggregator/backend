@@ -4,7 +4,6 @@ using PropertyAggregator.Domain.Models.Properties;
 
 namespace PropertyAggregator.Infrastructure.Persistence.Converters;
 
-/// <summary>Maps the domain <see cref="GeoPoint"/> to a PostGIS point (SRID 4326, X = longitude).</summary>
 public sealed class GeoPointConverter() : ValueConverter<GeoPoint, Point>(
 	value => new Point(value.Longitude, value.Latitude) { SRID = 4326 },
 	value => new GeoPoint(value.Y, value.X));
