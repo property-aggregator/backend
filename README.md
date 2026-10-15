@@ -101,6 +101,8 @@ The application reads its settings from environment variables through
 | `RABBITMQ_PASSWORD` | Worker | RabbitMQ password |
 | `RABBITMQ_QUEUE` | Worker | Queue with offers (`offers`) |
 | `RABBITMQ_EXCHANGE` | Worker | Exchange the scraper publishes to (`property_scraper`) |
+| `NOMINATIM_BASE_URL` | Worker | Nominatim instance used for geocoding (`https://nominatim.openstreetmap.org`) |
+| `NOMINATIM_USER_AGENT` | Worker | Identifies the application to Nominatim; has to contain a way to contact you |
 
 RabbitMQ variable names match the scraper's, so the values can be the same on both sides.
 

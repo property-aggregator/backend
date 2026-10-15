@@ -1,6 +1,5 @@
 namespace PropertyAggregator.Domain.Models.Properties;
 
-/// <summary>Price of an offer at a point in time. Created only by <see cref="Property"/>.</summary>
 public sealed class PropertyPriceHistory
 {
 	internal PropertyPriceHistory(Guid propertyId, decimal? price, DateTime createdAt)

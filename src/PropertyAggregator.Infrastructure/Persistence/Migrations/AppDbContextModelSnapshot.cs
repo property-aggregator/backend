@@ -63,6 +63,10 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("floor");
 
+                    b.Property<DateTime?>("GeocodedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("geocodedAt");
+
                     b.Property<bool>("IsDeal")
                         .HasColumnType("boolean")
                         .HasColumnName("isDeal");
@@ -74,6 +78,11 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                     b.Property<Point>("Location")
                         .HasColumnType("geography(Point, 4326)")
                         .HasColumnName("location");
+
+                    b.Property<string>("LocationPrecision")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("locationPrecision");
 
                     b.Property<string>("MainImageUrl")
                         .HasColumnType("text")
@@ -183,6 +192,10 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("iX_properties_city_propertyType_transactionType")
                         .HasFilter("\"archivedAt\" IS NULL");
 
+                    b.HasIndex(new[] { "FirstSeenAt" }, "PendingGeocoding")
+                        .HasDatabaseName("ix_properties_pendingGeocoding")
+                        .HasFilter("\"location\" IS NULL AND \"geocodedAt\" IS NULL");
+
                     b.ToTable("properties", (string)null);
                 });
 
@@ -289,6 +302,31 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                     NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("Province", "City", "District", "PropertyType", "TransactionType", "MarketType", "AreaM2Range"), false);
 
                     b.ToTable("priceStatistics", (string)null);
+                });
+
+            modelBuilder.Entity("PropertyAggregator.Infrastructure.Geocoding.GeocodingCacheEntry", b =>
+                {
+                    b.Property<string>("Query")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("query");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdAt");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("double precision")
+                        .HasColumnName("latitude");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("double precision")
+                        .HasColumnName("longitude");
+
+                    b.HasKey("Query")
+                        .HasName("pK_geocodingCache");
+
+                    b.ToTable("geocodingCache", (string)null);
                 });
 
             modelBuilder.Entity("PropertyAggregator.Domain.Models.Properties.PropertyPriceHistory", b =>

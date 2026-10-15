@@ -3,6 +3,7 @@ using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Domain.Enums;
 using PropertyAggregator.Domain.Models.Properties;
 using PropertyAggregator.Domain.Models.Statistics;
+using PropertyAggregator.Infrastructure.Geocoding;
 using PropertyAggregator.Infrastructure.Persistence.Converters;
 
 namespace PropertyAggregator.Infrastructure.Persistence;
@@ -14,6 +15,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 	public DbSet<Property> Properties => Set<Property>();
 	public DbSet<PropertyPriceHistory> PropertyPriceHistory => Set<PropertyPriceHistory>();
 	public DbSet<PriceStatistic> PriceStatistics => Set<PriceStatistic>();
+	internal DbSet<GeocodingCacheEntry> GeocodingCache => Set<GeocodingCacheEntry>();
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
@@ -34,6 +36,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 			.HaveMaxLength(EnumMaxLength);
 		configurationBuilder.Properties<SellerType>()
 			.HaveConversion<LowercaseEnumConverter<SellerType>>()
+			.HaveMaxLength(EnumMaxLength);
+		configurationBuilder.Properties<LocationPrecision>()
+			.HaveConversion<LowercaseEnumConverter<LocationPrecision>>()
 			.HaveMaxLength(EnumMaxLength);
 	}
 }
