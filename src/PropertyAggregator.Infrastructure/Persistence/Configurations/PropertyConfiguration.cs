@@ -33,7 +33,6 @@ internal sealed class PropertyConfiguration : IEntityTypeConfiguration<Property>
 
 		builder.Property(property => property.DealDiscountPercent).HasPrecision(5, 2);
 
-		// Optimistic concurrency on the PostgreSQL system column xmin; several consumers may update the same offer.
 		builder.Property<uint>("Version").IsRowVersion();
 
 		builder.HasMany(property => property.PropertyPriceHistories)
@@ -52,7 +51,10 @@ internal sealed class PropertyConfiguration : IEntityTypeConfiguration<Property>
 			.HasDatabaseName("ix_properties_deals_firstSeenAt")
 			.HasFilter("\"isDeal\" AND \"archivedAt\" IS NULL");
 
-		// Expiration check: active offers of a portal not seen since the start of a scrape run.
+		builder.HasIndex(property => property.FirstSeenAt, "PendingGeocoding")
+			.HasDatabaseName("ix_properties_pendingGeocoding")
+			.HasFilter("\"location\" IS NULL AND \"geocodedAt\" IS NULL");
+
 		builder.HasIndex(property => new { property.SourcePortal, property.LastSeenAt })
 			.HasFilter("\"archivedAt\" IS NULL");
 	}

@@ -1,6 +1,5 @@
 namespace PropertyAggregator.Domain.Models.Properties;
 
-/// <summary>Point in WGS 84 (SRID 4326).</summary>
 public sealed record GeoPoint
 {
 	public GeoPoint(double latitude, double longitude)
