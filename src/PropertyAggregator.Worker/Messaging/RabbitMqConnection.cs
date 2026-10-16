@@ -10,7 +10,7 @@ internal static class RabbitMqConnection
 
 	public const string OfferRoutingKey = "offer";
 	public const string ExpirationCheckRequestRoutingKey = "expiration_check_request";
-	public const string ExpirationCheckResultRoutingKey = "expiration_check_result";
+	public const string ExpirationCheckResponseRoutingKey = "expiration_check_response";
 
 	public static ConnectionFactory CreateFactory() => new()
 	{

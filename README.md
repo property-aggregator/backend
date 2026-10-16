@@ -124,14 +124,14 @@ on every scrape run, so storing it has to be idempotent.
 ### Expiration checks
 
 Offers not seen for 28 hours are checked by the scraper, because only it gets past the
-portals' bot protection. The Worker publishes a request per offer and applies the result.
+portals' bot protection. The Worker publishes a request per offer and applies the response.
 Both queues are durable, `direct`, bound to the same exchange with a routing key equal to
 the queue name, and declared by both sides with identical parameters.
 
 | Routing key (and queue) | Direction | Message |
 |---|---|---|
 | `expiration_check_request` | Worker → scraper | `propertyId`, `portal`, `sourceUrl` |
-| `expiration_check_result` | scraper → Worker | `propertyId` (as received), `status` (`active`, `expired` or `unknown`), `httpStatus` (nullable) |
+| `expiration_check_response` | scraper → Worker | `propertyId` (as received), `status` (`active`, `expired` or `unknown`), `httpStatus` (nullable) |
 
 `expired` archives the offer; `active` and `unknown` refresh its last-seen time, so it is
 checked again after the next 28 hours. A request that gets no answer is repeated after 6 hours.
