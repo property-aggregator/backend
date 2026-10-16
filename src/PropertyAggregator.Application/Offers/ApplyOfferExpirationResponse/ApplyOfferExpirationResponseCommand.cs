@@ -1,0 +1,5 @@
+using PropertyAggregator.Application.Offers.Contracts;
+
+namespace PropertyAggregator.Application.Offers.ApplyOfferExpirationResponse;
+
+public sealed record ApplyOfferExpirationResponseCommand(OfferExpirationCheckResponse Response);
