@@ -15,7 +15,7 @@ and stores the offers and exposes them through an HTTP API.
 | Project | Role |
 |---|---|
 | `PropertyAggregator.Api` | HTTP API, OpenAPI document and Scalar UI |
-| `PropertyAggregator.Worker` | Background service (will consume offers from RabbitMQ) |
+| `PropertyAggregator.Worker` | Background service (consumes offers from RabbitMQ, geocodes them, requests expiration checks) |
 | `PropertyAggregator.Application` | Use cases and message contracts |
 | `PropertyAggregator.Domain` | Domain model |
 | `PropertyAggregator.Infrastructure` | Database, messaging, health checks, environment access |
@@ -99,8 +99,6 @@ The application reads its settings from environment variables through
 | `RABBITMQ_PORT` | Worker | RabbitMQ port (positive integer) |
 | `RABBITMQ_USERNAME` | Worker | RabbitMQ user |
 | `RABBITMQ_PASSWORD` | Worker | RabbitMQ password |
-| `RABBITMQ_QUEUE` | Worker | Queue with offers (`offers`) |
-| `RABBITMQ_EXCHANGE` | Worker | Exchange the scraper publishes to (`property_scraper`) |
 | `NOMINATIM_BASE_URL` | Worker | Nominatim instance used for geocoding (`https://nominatim.openstreetmap.org`) |
 | `NOMINATIM_USER_AGENT` | Worker | Identifies the application to Nominatim; has to contain a way to contact you |
 
@@ -113,14 +111,28 @@ They are credentials for the local containers only.
 ## Messaging contract
 
 The scraper declares a durable `direct` exchange (`property_scraper`) and a durable
-queue (`offers`), bound with two routing keys. Messages are persistent JSON (UTF-8)
-with camelCase property names.
+queue (`offers`), bound with the `offer` routing key. Messages are persistent JSON
+(UTF-8) with camelCase property names.
 
 | Routing key | Message |
 |---|---|
 | `offer` | A single offer: `portal`, `sourceId`, `sourceUrl`, `title`, `price`, `pricePerM2`, `areaM2`, `rooms`, `floor`, `street`, `district`, `city`, `province`, `imageUrl`, `transactionType`, `propertyType`, `marketType`, `sellerType`, `scrapedAt` |
-| `scrape_event` | End of a scrape run: `event`, `portal`, `scrapeType`, `totalOffers`, `completed` |
 
 An offer is identified by `portal` + `sourceId`. The same offer is published again
 on every scrape run, so storing it has to be idempotent.
+
+### Expiration checks
+
+Offers not seen for 28 hours are checked by the scraper, because only it gets past the
+portals' bot protection. The Worker publishes a request per offer and applies the result.
+Both queues are durable, `direct`, bound to the same exchange with a routing key equal to
+the queue name, and declared by both sides with identical parameters.
+
+| Routing key (and queue) | Direction | Message |
+|---|---|---|
+| `expiration_check_request` | Worker → scraper | `propertyId`, `portal`, `sourceUrl` |
+| `expiration_check_result` | scraper → Worker | `propertyId` (as received), `status` (`active`, `expired` or `unknown`), `httpStatus` (nullable) |
+
+`expired` archives the offer; `active` and `unknown` refresh its last-seen time, so it is
+checked again after the next 28 hours. A request that gets no answer is repeated after 6 hours.
 
