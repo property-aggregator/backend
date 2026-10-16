@@ -61,6 +61,7 @@ public sealed class Property
 	public DateTime LastSeenAt { get; private set; }
 	public DateTime UpdatedAt { get; private set; }
 	public DateTime? ArchivedAt { get; private set; }
+	public DateTime? ExpirationCheckRequestedAt { get; private set; }
 
 	public IReadOnlyCollection<PropertyPriceHistory> PropertyPriceHistories => _propertyPriceHistories;
 
@@ -78,7 +79,28 @@ public sealed class Property
 			UpdatedAt = observedAt;
 		}
 
-		LastSeenAt = observedAt;
+		if (ArchivedAt is not null)
+		{
+			ArchivedAt = null;
+			UpdatedAt = observedAt;
+		}
+
+		MarkSeen(observedAt);
+	}
+
+	public void MarkSeen(DateTime seenAt) =>
+		LastSeenAt = seenAt;
+
+	public void MarkExpirationCheckRequested(DateTime requestedAt) =>
+		ExpirationCheckRequestedAt = requestedAt;
+
+	public void Archive(DateTime archivedAt)
+	{
+		if (ArchivedAt is not null)
+			return;
+
+		ArchivedAt = archivedAt;
+		UpdatedAt = archivedAt;
 	}
 
 	public void SetLocation(GeoPoint location, LocationPrecision precision, DateTime geocodedAt)
@@ -122,9 +144,9 @@ public sealed class Property
 	private void CopyAddress(PropertyDetails details)
 	{
 		bool addressChanged = Province != details.Province
-			|| City != details.City
-			|| District != details.District
-			|| Street != details.Street;
+							|| City != details.City
+							|| District != details.District
+							|| Street != details.Street;
 
 		Province = details.Province;
 		City = details.City;
