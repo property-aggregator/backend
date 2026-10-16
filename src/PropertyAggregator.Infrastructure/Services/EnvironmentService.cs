@@ -8,8 +8,6 @@ public static class EnvironmentService
 	public static int RabbitMqPort => GetIntEnvironmentVariable("RABBITMQ_PORT");
 	public static string RabbitMqUsername => GetEnvironmentVariable("RABBITMQ_USERNAME");
 	public static string RabbitMqPassword => GetEnvironmentVariable("RABBITMQ_PASSWORD");
-	public static string RabbitMqQueue => GetEnvironmentVariable("RABBITMQ_QUEUE");
-	public static string RabbitMqExchange => GetEnvironmentVariable("RABBITMQ_EXCHANGE");
 
 	public static string NominatimBaseUrl => GetEnvironmentVariable("NOMINATIM_BASE_URL");
 	public static string NominatimUserAgent => GetEnvironmentVariable("NOMINATIM_USER_AGENT");

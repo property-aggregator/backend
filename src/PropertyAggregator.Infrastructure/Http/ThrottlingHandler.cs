@@ -1,4 +1,4 @@
-namespace PropertyAggregator.Infrastructure.Geocoding;
+namespace PropertyAggregator.Infrastructure.Http;
 
 internal sealed class ThrottlingHandler(RequestThrottle throttle) : DelegatingHandler
 {

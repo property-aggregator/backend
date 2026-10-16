@@ -11,8 +11,6 @@
         "RABBITMQ_PORT": "5672",
         "RABBITMQ_USERNAME": "guest",
         "RABBITMQ_PASSWORD": "guest",
-        "RABBITMQ_QUEUE": "offers",
-        "RABBITMQ_EXCHANGE": "property_scraper",
         "NOMINATIM_BASE_URL": "https://nominatim.openstreetmap.org",
         "NOMINATIM_USER_AGENT": "PropertyAggregator/1.0 (https://github.com/property-aggregator)"
       }

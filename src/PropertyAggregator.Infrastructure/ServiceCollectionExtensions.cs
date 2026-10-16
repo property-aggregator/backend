@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Infrastructure.Geocoding;
+using PropertyAggregator.Infrastructure.Http;
 using PropertyAggregator.Infrastructure.Persistence;
 using PropertyAggregator.Infrastructure.Services;
 

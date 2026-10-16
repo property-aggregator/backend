@@ -54,6 +54,10 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("district");
 
+                    b.Property<DateTime?>("ExpirationCheckRequestedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expirationCheckRequestedAt");
+
                     b.Property<DateTime>("FirstSeenAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("firstSeenAt");
