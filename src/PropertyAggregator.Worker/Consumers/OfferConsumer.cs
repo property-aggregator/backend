@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Offers.Contracts;
 using PropertyAggregator.Application.Offers.UpsertOffer;
-using PropertyAggregator.Infrastructure.Services;
+using PropertyAggregator.Worker.Messaging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -11,8 +11,6 @@ namespace PropertyAggregator.Worker.Consumers;
 
 public sealed class OfferConsumer(IServiceScopeFactory scopeFactory, ILogger<OfferConsumer> logger) : BackgroundService
 {
-	private const string OfferRoutingKey = "offer";
-	private const string ScrapeEventRoutingKey = "scrape_event";
 	private const ushort PrefetchCount = 10;
 
 	private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
@@ -22,24 +20,12 @@ public sealed class OfferConsumer(IServiceScopeFactory scopeFactory, ILogger<Off
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
-		ConnectionFactory factory = new()
-		{
-			HostName = EnvironmentService.RabbitMqHost,
-			Port = EnvironmentService.RabbitMqPort,
-			UserName = EnvironmentService.RabbitMqUsername,
-			Password = EnvironmentService.RabbitMqPassword
-		};
+		const string queue = RabbitMqConnection.OffersQueue;
 
-		string queue = EnvironmentService.RabbitMqQueue;
-		string exchange = EnvironmentService.RabbitMqExchange;
-
-		await using IConnection connection = await factory.CreateConnectionAsync(stoppingToken);
+		await using IConnection connection = await RabbitMqConnection.CreateFactory().CreateConnectionAsync(stoppingToken);
 		await using IChannel channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
-		await channel.ExchangeDeclareAsync(exchange, ExchangeType.Direct, durable: true, cancellationToken: stoppingToken);
-		await channel.QueueDeclareAsync(queue, durable: true, exclusive: false, autoDelete: false, cancellationToken: stoppingToken);
-		await channel.QueueBindAsync(queue, exchange, OfferRoutingKey, cancellationToken: stoppingToken);
-		await channel.QueueBindAsync(queue, exchange, ScrapeEventRoutingKey, cancellationToken: stoppingToken);
+		await RabbitMqConnection.DeclareQueueAsync(channel, queue, RabbitMqConnection.OfferRoutingKey, stoppingToken);
 		await channel.BasicQosAsync(prefetchSize: 0, PrefetchCount, global: false, stoppingToken);
 
 		AsyncEventingBasicConsumer consumer = new(channel);
@@ -59,12 +45,6 @@ public sealed class OfferConsumer(IServiceScopeFactory scopeFactory, ILogger<Off
 
 	private async Task HandleDeliveryAsync(IChannel channel, BasicDeliverEventArgs delivery, CancellationToken cancellationToken)
 	{
-		if (delivery.RoutingKey != OfferRoutingKey)
-		{
-			await channel.BasicAckAsync(delivery.DeliveryTag, multiple: false, cancellationToken);
-			return;
-		}
-
 		try
 		{
 			OfferMessage? offerMessage = JsonSerializer.Deserialize<OfferMessage>(delivery.Body.Span, JsonOptions);
@@ -89,8 +69,6 @@ public sealed class OfferConsumer(IServiceScopeFactory scopeFactory, ILogger<Off
 		}
 		catch (Exception exception)
 		{
-			// One retry covers races between consumers (unique index, xmin concurrency).
-			// Offers are published again on every scrape run, so a dropped message heals itself.
 			bool retry = !delivery.Redelivered;
 			logger.LogError(exception, "Failed to store offer message (retry: {Retry})", retry);
 			await channel.BasicRejectAsync(delivery.DeliveryTag, requeue: retry, cancellationToken);
