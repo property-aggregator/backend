@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PropertyAggregator.Domain.Models.Properties;
-using PropertyAggregator.Domain.Models.Statistics;
+using PropertyAggregator.Domain.Models;
 
 namespace PropertyAggregator.Application.Abstractions;
 

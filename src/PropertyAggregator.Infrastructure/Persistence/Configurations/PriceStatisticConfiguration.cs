@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PropertyAggregator.Domain.Models.Statistics;
+using PropertyAggregator.Domain.Models;
 
 namespace PropertyAggregator.Infrastructure.Persistence.Configurations;
 
@@ -18,7 +18,7 @@ internal sealed class PriceStatisticConfiguration : IEntityTypeConfiguration<Pri
 		builder.Property(statistic => statistic.Province).HasMaxLength(50);
 		builder.Property(statistic => statistic.City).HasMaxLength(100);
 		builder.Property(statistic => statistic.District).HasMaxLength(100);
-		builder.Property(statistic => statistic.AreaM2Range).HasColumnName("areaM2Range").HasMaxLength(20);
+		builder.Property(statistic => statistic.AreaM2Range).HasColumnName("areaM2Range");
 		builder.Property(statistic => statistic.AvgPricePerM2).HasPrecision(12, 2);
 		builder.Property(statistic => statistic.MedianPricePerM2).HasPrecision(12, 2);
 

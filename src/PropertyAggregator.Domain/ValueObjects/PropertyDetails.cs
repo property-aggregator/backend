@@ -1,6 +1,6 @@
 using PropertyAggregator.Domain.Enums;
 
-namespace PropertyAggregator.Domain.Models.Properties;
+namespace PropertyAggregator.Domain.ValueObjects;
 
 public sealed record PropertyDetails(
 	string SourceUrl,

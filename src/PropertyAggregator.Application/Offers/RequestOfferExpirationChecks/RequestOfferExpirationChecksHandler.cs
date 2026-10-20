@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PropertyAggregator.Application.Abstractions;
-using PropertyAggregator.Application.Offers.Contracts;
-using PropertyAggregator.Domain.Models.Properties;
+using PropertyAggregator.Application.Messaging.Contracts;
+using PropertyAggregator.Domain.Models;
 
 namespace PropertyAggregator.Application.Offers.RequestOfferExpirationChecks;
 

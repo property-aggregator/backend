@@ -1,4 +1,4 @@
-namespace PropertyAggregator.Application.Offers.Contracts;
+namespace PropertyAggregator.Application.Messaging.Contracts;
 
 public sealed record OfferExpirationCheckRequest(
 	Guid PropertyId,

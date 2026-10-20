@@ -1,4 +1,4 @@
-namespace PropertyAggregator.Domain.Models.Properties;
+namespace PropertyAggregator.Domain.ValueObjects;
 
 public sealed record GeoPoint
 {

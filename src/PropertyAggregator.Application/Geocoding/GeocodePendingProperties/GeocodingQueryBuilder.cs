@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 using PropertyAggregator.Domain.Enums;
-using PropertyAggregator.Domain.Models.Properties;
+using PropertyAggregator.Domain.Models;
 
 namespace PropertyAggregator.Application.Geocoding.GeocodePendingProperties;
 

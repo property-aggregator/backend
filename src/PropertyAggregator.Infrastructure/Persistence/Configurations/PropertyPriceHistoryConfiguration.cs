@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PropertyAggregator.Domain.Models.Properties;
+using PropertyAggregator.Domain.Models;
 
 namespace PropertyAggregator.Infrastructure.Persistence.Configurations;
 
