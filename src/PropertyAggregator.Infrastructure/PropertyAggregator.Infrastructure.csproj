@@ -5,6 +5,7 @@
 		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />
 		<PackageReference Include="Microsoft.Extensions.Http.Resilience" />
 		<PackageReference Include="Npgsql" />
+		<PackageReference Include="RabbitMQ.Client" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" />
 	</ItemGroup>

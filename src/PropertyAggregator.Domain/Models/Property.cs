@@ -1,6 +1,7 @@
 using PropertyAggregator.Domain.Enums;
+using PropertyAggregator.Domain.ValueObjects;
 
-namespace PropertyAggregator.Domain.Models.Properties;
+namespace PropertyAggregator.Domain.Models;
 
 public sealed class Property
 {

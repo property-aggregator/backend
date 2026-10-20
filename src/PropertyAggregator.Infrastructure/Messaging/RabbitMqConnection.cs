@@ -1,9 +1,9 @@
 using PropertyAggregator.Infrastructure.Services;
 using RabbitMQ.Client;
 
-namespace PropertyAggregator.Worker.Messaging;
+namespace PropertyAggregator.Infrastructure.Messaging;
 
-internal static class RabbitMqConnection
+public static class RabbitMqConnection
 {
 	public const string Exchange = "property_scraper";
 	public const string OffersQueue = "offers";

@@ -1,4 +1,4 @@
-using PropertyAggregator.Domain.Models.Properties;
+using PropertyAggregator.Domain.ValueObjects;
 
 namespace PropertyAggregator.Application.Abstractions;
 

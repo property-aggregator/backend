@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Domain.Enums;
-using PropertyAggregator.Domain.Models.Properties;
-using PropertyAggregator.Domain.Models.Statistics;
+using PropertyAggregator.Domain.Models;
 using PropertyAggregator.Infrastructure.Geocoding;
 using PropertyAggregator.Infrastructure.Persistence.Converters;
 
@@ -36,6 +35,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 			.HaveMaxLength(EnumMaxLength);
 		configurationBuilder.Properties<SellerType>()
 			.HaveConversion<LowercaseEnumConverter<SellerType>>()
+			.HaveMaxLength(EnumMaxLength);
+		configurationBuilder.Properties<AreaM2Range>()
+			.HaveConversion<LowercaseEnumConverter<AreaM2Range>>()
 			.HaveMaxLength(EnumMaxLength);
 		configurationBuilder.Properties<LocationPrecision>()
 			.HaveConversion<LowercaseEnumConverter<LocationPrecision>>()

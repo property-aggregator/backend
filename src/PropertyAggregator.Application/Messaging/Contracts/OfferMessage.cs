@@ -1,6 +1,6 @@
 using PropertyAggregator.Domain.Enums;
 
-namespace PropertyAggregator.Application.Offers.Contracts;
+namespace PropertyAggregator.Application.Messaging.Contracts;
 
 public sealed record OfferMessage(
 	string Portal,

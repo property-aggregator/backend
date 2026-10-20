@@ -1,4 +1,4 @@
-namespace PropertyAggregator.Domain.Models.Properties;
+namespace PropertyAggregator.Domain.Models;
 
 public sealed class PropertyPriceHistory
 {

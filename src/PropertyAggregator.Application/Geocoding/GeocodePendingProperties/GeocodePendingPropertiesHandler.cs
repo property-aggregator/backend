@@ -2,7 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Domain.Enums;
-using PropertyAggregator.Domain.Models.Properties;
+using PropertyAggregator.Domain.Models;
+using PropertyAggregator.Domain.ValueObjects;
 
 namespace PropertyAggregator.Application.Geocoding.GeocodePendingProperties;
 

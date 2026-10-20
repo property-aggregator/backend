@@ -1,9 +1,9 @@
 using System.Text.Json;
 using PropertyAggregator.Application.Abstractions;
-using PropertyAggregator.Application.Offers.Contracts;
+using PropertyAggregator.Application.Messaging.Contracts;
 using RabbitMQ.Client;
 
-namespace PropertyAggregator.Worker.Messaging;
+namespace PropertyAggregator.Infrastructure.Messaging;
 
 public sealed class RabbitMqOfferExpirationCheckPublisher : IOfferExpirationCheckPublisher, IAsyncDisposable
 {

@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
 using PropertyAggregator.Application.Abstractions;
-using PropertyAggregator.Domain.Models.Properties;
+using PropertyAggregator.Domain.ValueObjects;
 
 namespace PropertyAggregator.Infrastructure.Geocoding;
 

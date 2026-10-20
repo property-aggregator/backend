@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
-using PropertyAggregator.Domain.Models.Properties;
+using PropertyAggregator.Domain.ValueObjects;
 
 namespace PropertyAggregator.Infrastructure.Persistence.Converters;
 

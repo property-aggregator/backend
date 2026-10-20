@@ -24,7 +24,7 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("PropertyAggregator.Domain.Models.Properties.Property", b =>
+            modelBuilder.Entity("PropertyAggregator.Domain.Models.Property", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -203,7 +203,7 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                     b.ToTable("properties", (string)null);
                 });
 
-            modelBuilder.Entity("PropertyAggregator.Domain.Models.Properties.PropertyPriceHistory", b =>
+            modelBuilder.Entity("PropertyAggregator.Domain.Models.PropertyPriceHistory", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -231,7 +231,7 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                     b.ToTable("propertyPriceHistory", (string)null);
                 });
 
-            modelBuilder.Entity("PropertyAggregator.Domain.Models.Statistics.PriceStatistic", b =>
+            modelBuilder.Entity("PropertyAggregator.Domain.Models.PriceStatistic", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -333,9 +333,9 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                     b.ToTable("geocodingCache", (string)null);
                 });
 
-            modelBuilder.Entity("PropertyAggregator.Domain.Models.Properties.PropertyPriceHistory", b =>
+            modelBuilder.Entity("PropertyAggregator.Domain.Models.PropertyPriceHistory", b =>
                 {
-                    b.HasOne("PropertyAggregator.Domain.Models.Properties.Property", null)
+                    b.HasOne("PropertyAggregator.Domain.Models.Property", null)
                         .WithMany("PropertyPriceHistories")
                         .HasForeignKey("PropertyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -343,7 +343,7 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fK_propertyPriceHistory_properties_propertyId");
                 });
 
-            modelBuilder.Entity("PropertyAggregator.Domain.Models.Properties.Property", b =>
+            modelBuilder.Entity("PropertyAggregator.Domain.Models.Property", b =>
                 {
                     b.Navigation("PropertyPriceHistories");
                 });

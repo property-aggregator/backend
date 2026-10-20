@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PropertyAggregator.Application.Abstractions;
-using PropertyAggregator.Domain.Models.Properties;
+using PropertyAggregator.Domain.ValueObjects;
 using PropertyAggregator.Infrastructure.Persistence;
 
 namespace PropertyAggregator.Infrastructure.Geocoding;

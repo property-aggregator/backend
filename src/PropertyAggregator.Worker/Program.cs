@@ -6,7 +6,7 @@ using PropertyAggregator.Application.Offers.RequestOfferExpirationChecks;
 using PropertyAggregator.Infrastructure;
 using PropertyAggregator.Worker.Consumers;
 using PropertyAggregator.Worker.Jobs;
-using PropertyAggregator.Worker.Messaging;
+using PropertyAggregator.Infrastructure.Messaging;
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 

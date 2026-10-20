@@ -1,4 +1,4 @@
-using PropertyAggregator.Application.Offers.Contracts;
+using PropertyAggregator.Application.Messaging.Contracts;
 
 namespace PropertyAggregator.Application.Offers.ApplyOfferExpirationResponse;
 
