@@ -3,6 +3,7 @@ using PropertyAggregator.Application.Geocoding.GeocodePendingProperties;
 using PropertyAggregator.Application.Offers.UpsertOffer;
 using PropertyAggregator.Application.Offers.ApplyOfferExpirationResponse;
 using PropertyAggregator.Application.Offers.RequestOfferExpirationChecks;
+using PropertyAggregator.Application.Statistics.CalculatePriceStatistics;
 using PropertyAggregator.Infrastructure;
 using PropertyAggregator.Worker.Consumers;
 using PropertyAggregator.Worker.Jobs;
@@ -18,11 +19,13 @@ builder.Services.AddScoped<ICommandHandler<UpsertOfferCommand>, UpsertOfferHandl
 builder.Services.AddScoped<ICommandHandler<GeocodePendingPropertiesCommand>, GeocodePendingPropertiesHandler>();
 builder.Services.AddScoped<ICommandHandler<RequestOfferExpirationChecksCommand>, RequestOfferExpirationChecksHandler>();
 builder.Services.AddScoped<ICommandHandler<ApplyOfferExpirationResponseCommand>, ApplyOfferExpirationResponseHandler>();
+builder.Services.AddScoped<ICommandHandler<CalculatePriceStatisticsCommand>, CalculatePriceStatisticsHandler>();
 builder.Services.AddSingleton<IOfferExpirationCheckPublisher, RabbitMqOfferExpirationCheckPublisher>();
 builder.Services.AddHostedService<OfferConsumer>();
 builder.Services.AddHostedService<ExpirationResponseConsumer>();
 builder.Services.AddHostedService<GeocodingJob>();
 builder.Services.AddHostedService<OfferExpirationJob>();
+builder.Services.AddHostedService<PriceStatisticsJob>();
 
 IHost host = builder.Build();
 host.Run();

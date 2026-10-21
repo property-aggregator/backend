@@ -43,9 +43,9 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasColumnType("numeric(12,2)")
                         .HasColumnName("avgPricePerM2");
 
-                    b.Property<DateTime>("CalculatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("calculatedAt");
+                    b.Property<DateOnly>("CalculatedOn")
+                        .HasColumnType("date")
+                        .HasColumnName("calculatedOn");
 
                     b.Property<string>("City")
                         .IsRequired()
@@ -88,11 +88,14 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pK_priceStatistics");
 
-                    b.HasIndex("City", "District", "PropertyType", "TransactionType", "MarketType", "AreaM2Range")
+                    b.HasIndex("CalculatedOn")
+                        .HasDatabaseName("iX_priceStatistics_calculatedOn");
+
+                    b.HasIndex("City", "District", "PropertyType", "TransactionType", "MarketType", "AreaM2Range", "CalculatedOn")
                         .IsUnique()
                         .HasDatabaseName("iX_priceStatistics_city_district_propertyType_transactionType_~");
 
-                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("City", "District", "PropertyType", "TransactionType", "MarketType", "AreaM2Range"), false);
+                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("City", "District", "PropertyType", "TransactionType", "MarketType", "AreaM2Range", "CalculatedOn"), false);
 
                     b.ToTable("priceStatistics", (string)null);
                 });

@@ -14,14 +14,24 @@ public sealed class PriceStatistic
 	public required decimal AvgPricePerM2 { get; init; }
 	public required decimal MedianPricePerM2 { get; init; }
 	public required int SampleSize { get; init; }
-	public required DateTime CalculatedAt { get; init; }
+	public required DateOnly CalculatedOn { get; init; }
 
-	public static AreaM2Range RangeFor(decimal areaM2) => areaM2 switch
+	public static IReadOnlyList<(decimal UpperBound, AreaM2Range Range)> AreaRangeBounds { get; } =
+	[
+		(30, AreaM2Range.Under30),
+		(50, AreaM2Range.From30To50),
+		(70, AreaM2Range.From50To70),
+		(100, AreaM2Range.From70To100)
+	];
+
+	public static AreaM2Range RangeFor(decimal areaM2)
 	{
-		< 30 => AreaM2Range.Under30,
-		< 50 => AreaM2Range.From30To50,
-		< 70 => AreaM2Range.From50To70,
-		< 100 => AreaM2Range.From70To100,
-		_ => AreaM2Range.Over100
-	};
+		foreach ((decimal upperBound, AreaM2Range range) in AreaRangeBounds)
+		{
+			if (areaM2 < upperBound)
+				return range;
+		}
+
+		return AreaM2Range.Over100;
+	}
 }

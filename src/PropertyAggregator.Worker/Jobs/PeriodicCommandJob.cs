@@ -5,6 +5,8 @@ namespace PropertyAggregator.Worker.Jobs;
 public abstract class PeriodicCommandJob<TCommand>(IServiceScopeFactory scopeFactory, ILogger logger, TimeSpan interval)
 	: BackgroundService
 {
+	protected virtual bool RunOnStart => false;
+
 	protected abstract TCommand CreateCommand();
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -13,6 +15,9 @@ public abstract class PeriodicCommandJob<TCommand>(IServiceScopeFactory scopeFac
 
 		try
 		{
+			if (RunOnStart)
+				await RunCycleAsync(stoppingToken);
+
 			while (await timer.WaitForNextTickAsync(stoppingToken))
 				await RunCycleAsync(stoppingToken);
 		}
