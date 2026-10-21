@@ -5,8 +5,7 @@ namespace PropertyAggregator.Domain.Models;
 public sealed class PriceStatistic
 {
 	public Guid Id { get; init; }
-	public string? Province { get; init; }
-	public string? City { get; init; }
+	public required string City { get; init; }
 	public string? District { get; init; }
 	public required PropertyType PropertyType { get; init; }
 	public required TransactionType TransactionType { get; init; }
