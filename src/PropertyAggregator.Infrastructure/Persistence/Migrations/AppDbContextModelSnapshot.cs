@@ -24,6 +24,82 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("PropertyAggregator.Domain.Models.PriceStatistic", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("AreaM2Range")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("areaM2Range");
+
+                    b.Property<decimal>("AvgPricePerM2")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)")
+                        .HasColumnName("avgPricePerM2");
+
+                    b.Property<DateOnly>("CalculatedOn")
+                        .HasColumnType("date")
+                        .HasColumnName("calculatedOn");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("city");
+
+                    b.Property<string>("District")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("district");
+
+                    b.Property<string>("MarketType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("marketType");
+
+                    b.Property<decimal>("MedianPricePerM2")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)")
+                        .HasColumnName("medianPricePerM2");
+
+                    b.Property<string>("PropertyType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("propertyType");
+
+                    b.Property<int>("SampleSize")
+                        .HasColumnType("integer")
+                        .HasColumnName("sampleSize");
+
+                    b.Property<string>("TransactionType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("transactionType");
+
+                    b.HasKey("Id")
+                        .HasName("pK_priceStatistics");
+
+                    b.HasIndex("CalculatedOn")
+                        .HasDatabaseName("iX_priceStatistics_calculatedOn");
+
+                    b.HasIndex("City", "District", "PropertyType", "TransactionType", "MarketType", "AreaM2Range", "CalculatedOn")
+                        .IsUnique()
+                        .HasDatabaseName("iX_priceStatistics_city_district_propertyType_transactionType_~");
+
+                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("City", "District", "PropertyType", "TransactionType", "MarketType", "AreaM2Range", "CalculatedOn"), false);
+
+                    b.ToTable("priceStatistics", (string)null);
+                });
+
             modelBuilder.Entity("PropertyAggregator.Domain.Models.Property", b =>
                 {
                     b.Property<Guid>("Id")
@@ -229,83 +305,6 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("iX_propertyPriceHistory_propertyId_createdAt");
 
                     b.ToTable("propertyPriceHistory", (string)null);
-                });
-
-            modelBuilder.Entity("PropertyAggregator.Domain.Models.PriceStatistic", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<string>("AreaM2Range")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("areaM2Range");
-
-                    b.Property<decimal>("AvgPricePerM2")
-                        .HasPrecision(12, 2)
-                        .HasColumnType("numeric(12,2)")
-                        .HasColumnName("avgPricePerM2");
-
-                    b.Property<DateTime>("CalculatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("calculatedAt");
-
-                    b.Property<string>("City")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("city");
-
-                    b.Property<string>("District")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("district");
-
-                    b.Property<string>("MarketType")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("marketType");
-
-                    b.Property<decimal>("MedianPricePerM2")
-                        .HasPrecision(12, 2)
-                        .HasColumnType("numeric(12,2)")
-                        .HasColumnName("medianPricePerM2");
-
-                    b.Property<string>("PropertyType")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("propertyType");
-
-                    b.Property<string>("Province")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("province");
-
-                    b.Property<int>("SampleSize")
-                        .HasColumnType("integer")
-                        .HasColumnName("sampleSize");
-
-                    b.Property<string>("TransactionType")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("transactionType");
-
-                    b.HasKey("Id")
-                        .HasName("pK_priceStatistics");
-
-                    b.HasIndex("Province", "City", "District", "PropertyType", "TransactionType", "MarketType", "AreaM2Range")
-                        .IsUnique()
-                        .HasDatabaseName("iX_priceStatistics_province_city_district_propertyType_transac~");
-
-                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("Province", "City", "District", "PropertyType", "TransactionType", "MarketType", "AreaM2Range"), false);
-
-                    b.ToTable("priceStatistics", (string)null);
                 });
 
             modelBuilder.Entity("PropertyAggregator.Infrastructure.Geocoding.GeocodingCacheEntry", b =>

@@ -1,0 +1,3 @@
+namespace PropertyAggregator.Application.Statistics.CalculatePriceStatistics;
+
+public sealed record CalculatePriceStatisticsCommand(int MinSampleSize);
