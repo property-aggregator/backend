@@ -7,7 +7,7 @@ using PropertyAggregator.Infrastructure.Persistence.Converters;
 
 namespace PropertyAggregator.Infrastructure.Persistence;
 
-public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IAppDbContext
+public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IUnitOfWork
 {
 	private const int EnumMaxLength = 20;
 
@@ -19,6 +19,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
 		modelBuilder.HasPostgresExtension("postgis");
+		modelBuilder.HasPostgresExtension("unaccent");
 		modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 	}
 
