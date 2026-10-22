@@ -70,6 +70,8 @@ public sealed class Property
 		SourceUrl, Title, MarketType, Price, AreaM2, Rooms, Floor, SellerType,
 		Province, City, District, Street, MainImageUrl);
 
+	private const decimal DealThresholdPercent = 15;
+
 	public void ApplyObservation(PropertyDetails details, DateTime observedAt)
 	{
 		if (details != CurrentDetails)
@@ -87,6 +89,17 @@ public sealed class Property
 		}
 
 		MarkSeen(observedAt);
+	}
+
+	public void EvaluateDeal(decimal? medianPricePerM2)
+	{
+		decimal? discount = PricePerM2 is { } pricePerM2 && medianPricePerM2 is > 0
+			? Math.Round((medianPricePerM2.Value - pricePerM2) / medianPricePerM2.Value * 100, 2,
+				MidpointRounding.AwayFromZero)
+			: null;
+
+		IsDeal = discount >= DealThresholdPercent;
+		DealDiscountPercent = IsDeal ? discount : null;
 	}
 
 	public void MarkSeen(DateTime seenAt) =>

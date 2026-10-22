@@ -5,7 +5,10 @@ using PropertyAggregator.Domain.ValueObjects;
 
 namespace PropertyAggregator.Application.Features.Worker.Offers.UpsertOffer;
 
-public sealed class UpsertOfferHandler(IPropertyRepository properties, IUnitOfWork unitOfWork) : ICommandHandler<UpsertOfferCommand>
+public sealed class UpsertOfferHandler(
+	IPropertyRepository properties,
+	IPriceStatisticsRepository statistics,
+	IUnitOfWork unitOfWork) : ICommandHandler<UpsertOfferCommand>
 {
 	public async Task HandleAsync(UpsertOfferCommand command, CancellationToken cancellationToken)
 	{
@@ -42,6 +45,8 @@ public sealed class UpsertOfferHandler(IPropertyRepository properties, IUnitOfWo
 		}
 		else
 			property.ApplyObservation(details, offerMessage.ScrapedAt);
+
+		property.EvaluateDeal(await statistics.FindMedianPricePerM2Async(property, cancellationToken));
 
 		await unitOfWork.SaveChangesAsync(cancellationToken);
 	}
