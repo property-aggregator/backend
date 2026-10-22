@@ -27,10 +27,8 @@ public sealed class PriceStatistic
 	public static AreaM2Range RangeFor(decimal areaM2)
 	{
 		foreach ((decimal upperBound, AreaM2Range range) in AreaRangeBounds)
-		{
 			if (areaM2 < upperBound)
 				return range;
-		}
 
 		return AreaM2Range.Over100;
 	}
