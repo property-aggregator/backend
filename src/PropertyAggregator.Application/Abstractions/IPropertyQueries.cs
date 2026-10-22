@@ -1,5 +1,5 @@
 using PropertyAggregator.Application.Common;
-using PropertyAggregator.Application.Properties;
+using PropertyAggregator.Application.Features.Api.Properties;
 
 namespace PropertyAggregator.Application.Abstractions;
 

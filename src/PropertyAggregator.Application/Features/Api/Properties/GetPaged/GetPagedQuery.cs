@@ -1,4 +1,4 @@
-namespace PropertyAggregator.Application.Properties.GetPaged;
+namespace PropertyAggregator.Application.Features.Api.Properties.GetPaged;
 
 public sealed record GetPagedQuery(
 	PropertySearchCriteria Criteria,

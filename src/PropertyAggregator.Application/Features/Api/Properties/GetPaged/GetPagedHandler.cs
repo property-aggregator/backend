@@ -1,7 +1,7 @@
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Common;
 
-namespace PropertyAggregator.Application.Properties.GetPaged;
+namespace PropertyAggregator.Application.Features.Api.Properties.GetPaged;
 
 public sealed class GetPagedHandler(IPropertyQueries queries) : IQueryHandler<GetPagedQuery, PagedResult<PropertyResult>>
 {

@@ -3,7 +3,7 @@ using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Messaging.Contracts;
 using PropertyAggregator.Domain.Models;
 
-namespace PropertyAggregator.Application.Offers.RequestOfferExpirationChecks;
+namespace PropertyAggregator.Application.Features.Worker.Offers.RequestOfferExpirationChecks;
 
 public sealed class RequestOfferExpirationChecksHandler(
 	IPropertyRepository properties,

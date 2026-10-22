@@ -10,10 +10,26 @@ using PropertyAggregator.Infrastructure.Services;
 
 namespace PropertyAggregator.Infrastructure;
 
-public static class ServiceCollectionExtensions
+public static class DependencyInjection
 {
 	// Nominatim usage policy allows at most one request per second; the margin absorbs network jitter.
 	private static readonly TimeSpan MinNominatimRequestInterval = TimeSpan.FromMilliseconds(1100);
+
+	public static IServiceCollection AddApiHandlers(this IServiceCollection services) =>
+		services.AddHandlersFrom("PropertyAggregator.Application.Features.Api");
+
+	public static IServiceCollection AddWorkerHandlers(this IServiceCollection services) =>
+		services.AddHandlersFrom("PropertyAggregator.Application.Features.Worker");
+
+	private static IServiceCollection AddHandlersFrom(this IServiceCollection services, string handlersNamespace) =>
+		services.Scan(scan => scan
+			.FromAssemblies(typeof(ICommandHandler<>).Assembly)
+			.AddClasses(classes => classes.InNamespaces(handlersNamespace).AssignableTo(typeof(IQueryHandler<,>)))
+			.AsImplementedInterfaces()
+			.WithScopedLifetime()
+			.AddClasses(classes => classes.InNamespaces(handlersNamespace).AssignableTo(typeof(ICommandHandler<>)))
+			.AsImplementedInterfaces()
+			.WithScopedLifetime());
 
 	public static IServiceCollection AddPersistence(this IServiceCollection services)
 	{

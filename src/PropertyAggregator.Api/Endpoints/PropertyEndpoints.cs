@@ -4,9 +4,9 @@ using PropertyAggregator.Api.Contracts;
 using PropertyAggregator.Api.Contracts.Properties;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Common;
-using PropertyAggregator.Application.Properties;
-using PropertyAggregator.Application.Properties.GetById;
-using PropertyAggregator.Application.Properties.GetPaged;
+using PropertyAggregator.Application.Features.Api.Properties;
+using PropertyAggregator.Application.Features.Api.Properties.GetById;
+using PropertyAggregator.Application.Features.Api.Properties.GetPaged;
 
 namespace PropertyAggregator.Api.Endpoints;
 

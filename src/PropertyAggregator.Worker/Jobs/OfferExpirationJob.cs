@@ -1,4 +1,4 @@
-using PropertyAggregator.Application.Offers.RequestOfferExpirationChecks;
+using PropertyAggregator.Application.Features.Worker.Offers.RequestOfferExpirationChecks;
 
 namespace PropertyAggregator.Worker.Jobs;
 

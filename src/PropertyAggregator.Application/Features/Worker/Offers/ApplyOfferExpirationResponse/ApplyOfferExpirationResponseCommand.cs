@@ -1,5 +1,5 @@
 using PropertyAggregator.Application.Messaging.Contracts;
 
-namespace PropertyAggregator.Application.Offers.ApplyOfferExpirationResponse;
+namespace PropertyAggregator.Application.Features.Worker.Offers.ApplyOfferExpirationResponse;
 
 public sealed record ApplyOfferExpirationResponseCommand(OfferExpirationCheckResponse Response);

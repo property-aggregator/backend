@@ -1,7 +1,7 @@
 using PropertyAggregator.Domain.Enums;
 using PropertyAggregator.Domain.ValueObjects;
 
-namespace PropertyAggregator.Application.Properties;
+namespace PropertyAggregator.Application.Features.Api.Properties;
 
 public sealed record PropertyResult(
 	Guid Id,

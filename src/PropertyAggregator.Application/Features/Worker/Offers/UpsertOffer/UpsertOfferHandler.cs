@@ -3,7 +3,7 @@ using PropertyAggregator.Application.Messaging.Contracts;
 using PropertyAggregator.Domain.Models;
 using PropertyAggregator.Domain.ValueObjects;
 
-namespace PropertyAggregator.Application.Offers.UpsertOffer;
+namespace PropertyAggregator.Application.Features.Worker.Offers.UpsertOffer;
 
 public sealed class UpsertOfferHandler(IPropertyRepository properties, IUnitOfWork unitOfWork) : ICommandHandler<UpsertOfferCommand>
 {

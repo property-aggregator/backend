@@ -1,6 +1,6 @@
 using PropertyAggregator.Domain.Enums;
 
-namespace PropertyAggregator.Application.Properties;
+namespace PropertyAggregator.Application.Features.Api.Properties;
 
 public sealed record PropertySearchCriteria(
 	PropertyType? PropertyType = null,
