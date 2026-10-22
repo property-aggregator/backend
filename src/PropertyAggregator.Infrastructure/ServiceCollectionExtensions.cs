@@ -4,6 +4,8 @@ using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Infrastructure.Geocoding;
 using PropertyAggregator.Infrastructure.Http;
 using PropertyAggregator.Infrastructure.Persistence;
+using PropertyAggregator.Infrastructure.Persistence.Queries;
+using PropertyAggregator.Infrastructure.Persistence.Repositories;
 using PropertyAggregator.Infrastructure.Services;
 
 namespace PropertyAggregator.Infrastructure;
@@ -19,9 +21,11 @@ public static class ServiceCollectionExtensions
 			.UseNpgsql(EnvironmentService.SqlConnectionString, npgsql => npgsql.UseNetTopologySuite())
 			.UseCamelCaseNamingConvention());
 
-		services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
+		services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<AppDbContext>());
+		services.AddScoped<IPropertyRepository, PropertyRepository>();
+		services.AddScoped<IPropertyQueries, PropertyQueries>();
 
-		services.AddScoped<IPriceStatisticsWriter, PriceStatisticsWriter>();
+		services.AddScoped<IPriceStatisticsRepository, PriceStatisticsRepository>();
 
 		services.AddHealthChecks().AddDbContextCheck<AppDbContext>("database");
 

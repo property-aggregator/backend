@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Messaging.Contracts;
@@ -7,7 +6,8 @@ using PropertyAggregator.Domain.Models;
 namespace PropertyAggregator.Application.Offers.ApplyOfferExpirationResponse;
 
 public sealed class ApplyOfferExpirationResponseHandler(
-	IAppDbContext db,
+	IPropertyRepository properties,
+	IUnitOfWork unitOfWork,
 	TimeProvider timeProvider,
 	ILogger<ApplyOfferExpirationResponseHandler> logger) : ICommandHandler<ApplyOfferExpirationResponseCommand>
 {
@@ -15,8 +15,7 @@ public sealed class ApplyOfferExpirationResponseHandler(
 	{
 		OfferExpirationCheckResponse response = command.Response;
 
-		Property? property = await db.Properties
-			.FirstOrDefaultAsync(candidate => candidate.Id == response.PropertyId, cancellationToken);
+		Property? property = await properties.GetByIdAsync(response.PropertyId, cancellationToken);
 
 		if (property is null)
 		{
@@ -43,6 +42,6 @@ public sealed class ApplyOfferExpirationResponseHandler(
 			}
 		}
 
-		await db.SaveChangesAsync(cancellationToken);
+		await unitOfWork.SaveChangesAsync(cancellationToken);
 	}
 }

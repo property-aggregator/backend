@@ -4,10 +4,13 @@ using PropertyAggregator.Domain.Enums;
 using PropertyAggregator.Domain.Models;
 using PropertyAggregator.Infrastructure.Persistence.Converters;
 
-namespace PropertyAggregator.Infrastructure.Persistence;
+namespace PropertyAggregator.Infrastructure.Persistence.Repositories;
 
-internal sealed class PriceStatisticsWriter(AppDbContext db) : IPriceStatisticsWriter
+internal sealed class PriceStatisticsRepository(AppDbContext db) : IPriceStatisticsRepository
 {
+	public Task<bool> ExistsForAsync(DateOnly calculatedOn, CancellationToken cancellationToken) =>
+		db.PriceStatistics.AnyAsync(statistic => statistic.CalculatedOn == calculatedOn, cancellationToken);
+
 	public Task<int> InsertAsync(int minSampleSize, DateOnly calculatedOn, CancellationToken cancellationToken)
 	{
 		decimal[] areaBounds = [.. PriceStatistic.AreaRangeBounds.Select(range => range.UpperBound)];
