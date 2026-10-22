@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Messaging.Contracts;
@@ -7,7 +6,8 @@ using PropertyAggregator.Domain.Models;
 namespace PropertyAggregator.Application.Offers.RequestOfferExpirationChecks;
 
 public sealed class RequestOfferExpirationChecksHandler(
-	IAppDbContext db,
+	IPropertyRepository properties,
+	IUnitOfWork unitOfWork,
 	IOfferExpirationCheckPublisher publisher,
 	TimeProvider timeProvider,
 	ILogger<RequestOfferExpirationChecksHandler> logger) : ICommandHandler<RequestOfferExpirationChecksCommand>
@@ -18,13 +18,7 @@ public sealed class RequestOfferExpirationChecksHandler(
 		DateTime staleBefore = now - command.StaleAfter;
 		DateTime retryBefore = now - command.RetryAfter;
 
-		List<Property> staleProperties = await db.Properties
-			.Where(property => property.ArchivedAt == null
-				&& property.LastSeenAt < staleBefore
-				&& (property.ExpirationCheckRequestedAt == null || property.ExpirationCheckRequestedAt < retryBefore))
-			.OrderBy(property => property.LastSeenAt)
-			.Take(command.BatchSize)
-			.ToListAsync(cancellationToken);
+		IReadOnlyList<Property> staleProperties = await properties.ListStaleAsync(staleBefore, retryBefore, command.BatchSize, cancellationToken);
 
 		if (staleProperties.Count == 0)
 			return;
@@ -39,7 +33,7 @@ public sealed class RequestOfferExpirationChecksHandler(
 		foreach (Property property in staleProperties)
 			property.MarkExpirationCheckRequested(now);
 
-		await db.SaveChangesAsync(cancellationToken);
+		await unitOfWork.SaveChangesAsync(cancellationToken);
 
 		logger.LogInformation("Requested expiration checks for {Count} stale properties", staleProperties.Count);
 	}

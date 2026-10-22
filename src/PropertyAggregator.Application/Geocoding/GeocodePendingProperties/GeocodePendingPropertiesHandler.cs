@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Domain.Enums;
@@ -8,23 +7,20 @@ using PropertyAggregator.Domain.ValueObjects;
 namespace PropertyAggregator.Application.Geocoding.GeocodePendingProperties;
 
 public sealed class GeocodePendingPropertiesHandler(
-	IAppDbContext db,
+	IPropertyRepository properties,
+	IUnitOfWork unitOfWork,
 	IGeocoder geocoder,
 	TimeProvider timeProvider,
 	ILogger<GeocodePendingPropertiesHandler> logger) : ICommandHandler<GeocodePendingPropertiesCommand>
 {
 	public async Task HandleAsync(GeocodePendingPropertiesCommand command, CancellationToken cancellationToken)
 	{
-		List<Property> pending = await db.Properties
-			.Where(property => property.Location == null && property.GeocodedAt == null && property.City != null)
-			.OrderByDescending(property => property.FirstSeenAt)
-			.Take(command.BatchSize)
-			.ToListAsync(cancellationToken);
+		IReadOnlyList<Property> pending = await properties.ListPendingGeocodingAsync(command.BatchSize, cancellationToken);
 
 		foreach (Property property in pending)
 		{
 			await GeocodeAsync(property, cancellationToken);
-			await db.SaveChangesAsync(cancellationToken);
+			await unitOfWork.SaveChangesAsync(cancellationToken);
 		}
 	}
 

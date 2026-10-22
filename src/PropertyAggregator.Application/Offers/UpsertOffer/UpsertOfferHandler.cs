@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Messaging.Contracts;
 using PropertyAggregator.Domain.Models;
@@ -6,15 +5,13 @@ using PropertyAggregator.Domain.ValueObjects;
 
 namespace PropertyAggregator.Application.Offers.UpsertOffer;
 
-public sealed class UpsertOfferHandler(IAppDbContext db) : ICommandHandler<UpsertOfferCommand>
+public sealed class UpsertOfferHandler(IPropertyRepository properties, IUnitOfWork unitOfWork) : ICommandHandler<UpsertOfferCommand>
 {
 	public async Task HandleAsync(UpsertOfferCommand command, CancellationToken cancellationToken)
 	{
 		OfferMessage offerMessage = command.Offer;
 
-		Property? property = await db.Properties.FirstOrDefaultAsync(
-			existing => existing.SourcePortal == offerMessage.Portal && existing.SourceId == offerMessage.SourceId,
-			cancellationToken);
+		Property? property = await properties.GetBySourceAsync(offerMessage.Portal, offerMessage.SourceId, cancellationToken);
 
 		PropertyDetails details = new(
 			SourceUrl: offerMessage.SourceUrl,
@@ -41,11 +38,11 @@ public sealed class UpsertOfferHandler(IAppDbContext db) : ICommandHandler<Upser
 				details: details,
 				observedAt: offerMessage.ScrapedAt);
 
-			db.Properties.Add(property);
+			properties.Add(property);
 		}
 		else
 			property.ApplyObservation(details, offerMessage.ScrapedAt);
 
-		await db.SaveChangesAsync(cancellationToken);
+		await unitOfWork.SaveChangesAsync(cancellationToken);
 	}
 }
