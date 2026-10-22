@@ -1,5 +1,5 @@
 using PropertyAggregator.Application.Messaging.Contracts;
-using PropertyAggregator.Application.Offers.ApplyOfferExpirationResponse;
+using PropertyAggregator.Application.Features.Worker.Offers.ApplyOfferExpirationResponse;
 using PropertyAggregator.Infrastructure.Messaging;
 
 namespace PropertyAggregator.Worker.Consumers;

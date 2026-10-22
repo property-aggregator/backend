@@ -1,5 +1,5 @@
 using PropertyAggregator.Application.Messaging.Contracts;
-using PropertyAggregator.Application.Offers.UpsertOffer;
+using PropertyAggregator.Application.Features.Worker.Offers.UpsertOffer;
 using PropertyAggregator.Infrastructure.Messaging;
 
 namespace PropertyAggregator.Worker.Consumers;

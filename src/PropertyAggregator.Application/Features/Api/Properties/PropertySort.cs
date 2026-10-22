@@ -1,4 +1,4 @@
-namespace PropertyAggregator.Application.Properties;
+namespace PropertyAggregator.Application.Features.Api.Properties;
 
 public enum PropertySort
 {

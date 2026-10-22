@@ -1,4 +1,4 @@
-using PropertyAggregator.Application.Statistics.CalculatePriceStatistics;
+using PropertyAggregator.Application.Features.Worker.Statistics.CalculatePriceStatistics;
 
 namespace PropertyAggregator.Worker.Jobs;
 

@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Common;
-using PropertyAggregator.Application.Properties;
+using PropertyAggregator.Application.Features.Api.Properties;
 using PropertyAggregator.Domain.Models;
 
 namespace PropertyAggregator.Infrastructure.Persistence.Queries;

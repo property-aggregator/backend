@@ -1,5 +1,5 @@
-using PropertyAggregator.Application.Properties;
-using PropertyAggregator.Application.Properties.GetPaged;
+using PropertyAggregator.Application.Features.Api.Properties;
+using PropertyAggregator.Application.Features.Api.Properties.GetPaged;
 using PropertyAggregator.Domain.Enums;
 
 namespace PropertyAggregator.Api.Contracts.Properties;

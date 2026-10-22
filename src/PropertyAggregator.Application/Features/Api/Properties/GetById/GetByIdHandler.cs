@@ -1,6 +1,6 @@
 using PropertyAggregator.Application.Abstractions;
 
-namespace PropertyAggregator.Application.Properties.GetById;
+namespace PropertyAggregator.Application.Features.Api.Properties.GetById;
 
 public sealed class GetByIdHandler(IPropertyQueries queries) : IQueryHandler<GetByIdQuery, PropertyResult?>
 {

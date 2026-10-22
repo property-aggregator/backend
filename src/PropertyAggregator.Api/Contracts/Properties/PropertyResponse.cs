@@ -1,4 +1,4 @@
-using PropertyAggregator.Application.Properties;
+using PropertyAggregator.Application.Features.Api.Properties;
 using PropertyAggregator.Domain.Enums;
 
 namespace PropertyAggregator.Api.Contracts.Properties;

@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using PropertyAggregator.Domain.Enums;
 using PropertyAggregator.Domain.Models;
 
-namespace PropertyAggregator.Application.Geocoding.GeocodePendingProperties;
+namespace PropertyAggregator.Application.Features.Worker.Geocoding.GeocodePendingProperties;
 
 internal static partial class GeocodingQueryBuilder
 {

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using PropertyAggregator.Application.Abstractions;
 
-namespace PropertyAggregator.Application.Statistics.CalculatePriceStatistics;
+namespace PropertyAggregator.Application.Features.Worker.Statistics.CalculatePriceStatistics;
 
 public sealed class CalculatePriceStatisticsHandler(
 	IPriceStatisticsRepository statistics,

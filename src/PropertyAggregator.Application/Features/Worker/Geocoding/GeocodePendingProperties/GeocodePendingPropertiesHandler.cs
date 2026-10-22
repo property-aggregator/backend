@@ -4,7 +4,7 @@ using PropertyAggregator.Domain.Enums;
 using PropertyAggregator.Domain.Models;
 using PropertyAggregator.Domain.ValueObjects;
 
-namespace PropertyAggregator.Application.Geocoding.GeocodePendingProperties;
+namespace PropertyAggregator.Application.Features.Worker.Geocoding.GeocodePendingProperties;
 
 public sealed class GeocodePendingPropertiesHandler(
 	IPropertyRepository properties,

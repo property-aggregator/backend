@@ -1,4 +1,4 @@
-using PropertyAggregator.Application.Geocoding.GeocodePendingProperties;
+using PropertyAggregator.Application.Features.Worker.Geocoding.GeocodePendingProperties;
 
 namespace PropertyAggregator.Worker.Jobs;
 
