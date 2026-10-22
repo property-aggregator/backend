@@ -11,6 +11,29 @@ internal sealed class PriceStatisticsRepository(AppDbContext db) : IPriceStatist
 	public Task<bool> ExistsForAsync(DateOnly calculatedOn, CancellationToken cancellationToken) =>
 		db.PriceStatistics.AnyAsync(statistic => statistic.CalculatedOn == calculatedOn, cancellationToken);
 
+	public async Task<decimal?> FindMedianPricePerM2Async(Property property, CancellationToken cancellationToken)
+	{
+		string? city = property.City?.Trim().ToLowerInvariant();
+
+		if (string.IsNullOrEmpty(city) || property.AreaM2 is not > 0)
+			return null;
+
+		string? district = string.IsNullOrWhiteSpace(property.District) ? null : property.District.Trim().ToLowerInvariant();
+		AreaM2Range areaRange = PriceStatistic.RangeFor(property.AreaM2.Value);
+
+		return await db.PriceStatistics
+			.Where(statistic => statistic.City == city
+				&& statistic.PropertyType == property.PropertyType
+				&& statistic.TransactionType == property.TransactionType
+				&& statistic.MarketType == property.MarketType
+				&& statistic.AreaM2Range == areaRange
+				&& (statistic.District == null || statistic.District == district))
+			.OrderByDescending(statistic => statistic.CalculatedOn)
+			.ThenBy(statistic => statistic.District == null)
+			.Select(statistic => (decimal?)statistic.MedianPricePerM2)
+			.FirstOrDefaultAsync(cancellationToken);
+	}
+
 	public Task<int> InsertAsync(int minSampleSize, DateOnly calculatedOn, CancellationToken cancellationToken)
 	{
 		decimal[] areaBounds = [.. PriceStatistic.AreaRangeBounds.Select(range => range.UpperBound)];
