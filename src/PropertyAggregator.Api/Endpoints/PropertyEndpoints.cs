@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using PropertyAggregator.Api.Security;
 using PropertyAggregator.Api.Contracts;
 using PropertyAggregator.Api.Contracts.Properties;
 using PropertyAggregator.Application.Abstractions;
@@ -14,7 +15,8 @@ public static class PropertyEndpoints
 {
 	public static IEndpointRouteBuilder MapPropertyEndpoints(this IEndpointRouteBuilder app)
 	{
-		RouteGroupBuilder group = app.MapGroup("/api/properties").WithTags("Properties");
+		RouteGroupBuilder group = app.MapGroup("/api/properties").WithTags("Properties")
+			.RequireAuthorization(AuthorizationPolicies.TermsAccepted);
 
 		group.MapGet("/", GetPagedAsync);
 		group.MapGet("/{id:guid}", GetByIdAsync);
