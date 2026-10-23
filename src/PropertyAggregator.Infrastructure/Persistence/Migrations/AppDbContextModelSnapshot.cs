@@ -308,6 +308,71 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                     b.ToTable("propertyPriceHistory", (string)null);
                 });
 
+            modelBuilder.Entity("PropertyAggregator.Domain.Models.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdAt");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("externalId");
+
+                    b.HasKey("Id")
+                        .HasName("pK_users");
+
+                    b.HasIndex("ExternalId")
+                        .IsUnique()
+                        .HasDatabaseName("iX_users_externalId");
+
+                    b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("PropertyAggregator.Domain.Models.UserConsent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdAt");
+
+                    b.Property<bool>("Granted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("granted");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("type");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("userId");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("version");
+
+                    b.HasKey("Id")
+                        .HasName("pK_userConsents");
+
+                    b.HasIndex("UserId", "Type", "CreatedAt")
+                        .HasDatabaseName("iX_userConsents_userId_type_createdAt");
+
+                    b.ToTable("userConsents", (string)null);
+                });
+
             modelBuilder.Entity("PropertyAggregator.Infrastructure.Geocoding.GeocodingCacheEntry", b =>
                 {
                     b.Property<string>("Query")
@@ -343,9 +408,24 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fK_propertyPriceHistory_properties_propertyId");
                 });
 
+            modelBuilder.Entity("PropertyAggregator.Domain.Models.UserConsent", b =>
+                {
+                    b.HasOne("PropertyAggregator.Domain.Models.User", null)
+                        .WithMany("Consents")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fK_userConsents_users_userId");
+                });
+
             modelBuilder.Entity("PropertyAggregator.Domain.Models.Property", b =>
                 {
                     b.Navigation("PropertyPriceHistories");
+                });
+
+            modelBuilder.Entity("PropertyAggregator.Domain.Models.User", b =>
+                {
+                    b.Navigation("Consents");
                 });
 #pragma warning restore 612, 618
         }

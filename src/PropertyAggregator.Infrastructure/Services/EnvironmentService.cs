@@ -9,6 +9,14 @@ public static class EnvironmentService
 	public static string RabbitMqUsername => GetEnvironmentVariable("RABBITMQ_USERNAME");
 	public static string RabbitMqPassword => GetEnvironmentVariable("RABBITMQ_PASSWORD");
 
+	public static string Auth0Domain => GetEnvironmentVariable("AUTH0_DOMAIN");
+	public static string Auth0Audience => GetEnvironmentVariable("AUTH0_AUDIENCE");
+
+	public static string[] CorsAllowedOrigins => GetListEnvironmentVariable("CORS_ALLOWED_ORIGINS");
+
+	public static string TermsVersion => GetEnvironmentVariable("TERMS_VERSION");
+	public static string MarketingConsentVersion => GetEnvironmentVariable("MARKETING_CONSENT_VERSION");
+
 	public static string NominatimBaseUrl => GetEnvironmentVariable("NOMINATIM_BASE_URL");
 	public static string NominatimUserAgent => GetEnvironmentVariable("NOMINATIM_USER_AGENT");
 
@@ -24,6 +32,9 @@ public static class EnvironmentService
 
 		return value;
 	}
+
+	private static string[] GetListEnvironmentVariable(string variable) =>
+		[.. GetEnvironmentVariable(variable).Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)];
 
 	private static int GetIntEnvironmentVariable(string variable)
 	{

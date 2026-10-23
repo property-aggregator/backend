@@ -31,6 +31,9 @@ public static class DependencyInjection
 			.AsImplementedInterfaces()
 			.WithScopedLifetime());
 
+	public static IServiceCollection AddConsentVersions(this IServiceCollection services) =>
+		services.AddSingleton<IConsentVersions>(new EnvironmentConsentVersions());
+
 	public static IServiceCollection AddPersistence(this IServiceCollection services)
 	{
 		services.AddDbContext<AppDbContext>(options => options
@@ -40,6 +43,7 @@ public static class DependencyInjection
 		services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<AppDbContext>());
 		services.AddScoped<IPropertyRepository, PropertyRepository>();
 		services.AddScoped<IPropertyQueries, PropertyQueries>();
+		services.AddScoped<IUserRepository, UserRepository>();
 
 		services.AddScoped<IPriceStatisticsRepository, PriceStatisticsRepository>();
 

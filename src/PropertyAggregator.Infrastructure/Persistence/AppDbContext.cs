@@ -14,6 +14,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 	public DbSet<Property> Properties => Set<Property>();
 	public DbSet<PropertyPriceHistory> PropertyPriceHistory => Set<PropertyPriceHistory>();
 	public DbSet<PriceStatistic> PriceStatistics => Set<PriceStatistic>();
+	public DbSet<User> Users => Set<User>();
+	public DbSet<UserConsent> UserConsents => Set<UserConsent>();
 	internal DbSet<GeocodingCacheEntry> GeocodingCache => Set<GeocodingCacheEntry>();
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -42,6 +44,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 			.HaveMaxLength(EnumMaxLength);
 		configurationBuilder.Properties<LocationPrecision>()
 			.HaveConversion<LowercaseEnumConverter<LocationPrecision>>()
+			.HaveMaxLength(EnumMaxLength);
+		configurationBuilder.Properties<ConsentType>()
+			.HaveConversion<LowercaseEnumConverter<ConsentType>>()
 			.HaveMaxLength(EnumMaxLength);
 	}
 }
