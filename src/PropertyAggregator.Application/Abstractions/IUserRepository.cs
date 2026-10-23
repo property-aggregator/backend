@@ -6,5 +6,5 @@ public interface IUserRepository
 {
 	Task<User?> GetByExternalIdAsync(string externalId, CancellationToken cancellationToken);
 
-	void Add(User user);
+	Task<User> GetOrCreateAsync(string externalId, DateTime now, CancellationToken cancellationToken);
 }

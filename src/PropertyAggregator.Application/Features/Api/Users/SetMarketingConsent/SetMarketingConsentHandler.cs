@@ -13,7 +13,7 @@ public sealed class SetMarketingConsentHandler(
 	{
 		DateTime now = timeProvider.GetUtcNow().UtcDateTime;
 
-		User user = await UserProvisioning.GetOrAddAsync(users, command.ExternalId, now, cancellationToken);
+		User user = await users.GetOrCreateAsync(command.ExternalId, now, cancellationToken);
 
 		user.SetMarketingConsent(consentVersions.Marketing, command.Granted, now);
 
