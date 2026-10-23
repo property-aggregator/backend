@@ -11,5 +11,24 @@ internal sealed class UserRepository(AppDbContext db) : IUserRepository
 			.Include(user => user.Consents)
 			.FirstOrDefaultAsync(user => user.ExternalId == externalId, cancellationToken);
 
-	public void Add(User user) => db.Users.Add(user);
+	public async Task<User> GetOrCreateAsync(string externalId, DateTime now, CancellationToken cancellationToken)
+	{
+		User? user = await GetByExternalIdAsync(externalId, cancellationToken);
+
+		if (user is not null)
+			return user;
+
+		User created = new(externalId, now);
+
+		await db.Database.ExecuteSqlAsync(
+			$"""
+			INSERT INTO "users" ("id", "externalId", "createdAt")
+			VALUES ({created.Id}, {created.ExternalId}, {created.CreatedAt})
+			ON CONFLICT ("externalId") DO NOTHING
+			""",
+			cancellationToken);
+
+		return await GetByExternalIdAsync(externalId, cancellationToken)
+			?? throw new InvalidOperationException($"User '{externalId}' could not be created.");
+	}
 }

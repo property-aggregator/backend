@@ -9,6 +9,7 @@ using Scalar.AspNetCore;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi(options => options.AddBearerSecurity());
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddPersistence();
@@ -23,6 +24,7 @@ builder.Services.AddApiHandlers();
 
 WebApplication app = builder.Build();
 
+app.UseExceptionHandler();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();

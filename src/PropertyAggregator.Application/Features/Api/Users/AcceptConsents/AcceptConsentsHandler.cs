@@ -13,7 +13,7 @@ public sealed class AcceptConsentsHandler(
 	{
 		DateTime now = timeProvider.GetUtcNow().UtcDateTime;
 
-		User user = await UserProvisioning.GetOrAddAsync(users, command.ExternalId, now, cancellationToken);
+		User user = await users.GetOrCreateAsync(command.ExternalId, now, cancellationToken);
 
 		user.AcceptTerms(consentVersions.Terms, now);
 		user.SetMarketingConsent(consentVersions.Marketing, command.MarketingConsent, now);
