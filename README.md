@@ -99,6 +99,7 @@ The application reads its settings from environment variables through
 | `ConnectionStrings__DefaultConnection` | Api, Worker | PostgreSQL connection string |
 | `AUTH0_DOMAIN` | Api | Auth0 tenant domain, used to validate access tokens (e.g. `your-tenant.eu.auth0.com`) |
 | `AUTH0_AUDIENCE` | Api | Identifier of the API registered in Auth0; has to match the `audience` the client requests |
+| `CORS_ALLOWED_ORIGINS` | Api | Comma-separated origins allowed to call the API from a browser (e.g. `http://localhost:5173`) |
 | `TERMS_VERSION` | Api | Version of the published terms (at most 20 characters); users are asked to accept again when it changes |
 | `MARKETING_CONSENT_VERSION` | Api | Version of the marketing consent text (at most 20 characters) |
 | `RABBITMQ_HOST` | Worker | RabbitMQ host |

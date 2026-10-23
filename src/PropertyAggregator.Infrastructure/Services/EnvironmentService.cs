@@ -12,6 +12,8 @@ public static class EnvironmentService
 	public static string Auth0Domain => GetEnvironmentVariable("AUTH0_DOMAIN");
 	public static string Auth0Audience => GetEnvironmentVariable("AUTH0_AUDIENCE");
 
+	public static string[] CorsAllowedOrigins => GetListEnvironmentVariable("CORS_ALLOWED_ORIGINS");
+
 	public static string TermsVersion => GetEnvironmentVariable("TERMS_VERSION");
 	public static string MarketingConsentVersion => GetEnvironmentVariable("MARKETING_CONSENT_VERSION");
 
@@ -30,6 +32,9 @@ public static class EnvironmentService
 
 		return value;
 	}
+
+	private static string[] GetListEnvironmentVariable(string variable) =>
+		[.. GetEnvironmentVariable(variable).Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)];
 
 	private static int GetIntEnvironmentVariable(string variable)
 	{
