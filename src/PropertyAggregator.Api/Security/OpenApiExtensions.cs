@@ -26,7 +26,9 @@ public static class OpenApiExtensions
 
 		options.AddOperationTransformer((operation, context, _) =>
 		{
-			if (!context.Description.ActionDescriptor.EndpointMetadata.OfType<IAuthorizeData>().Any())
+			IList<object> metadata = context.Description.ActionDescriptor.EndpointMetadata;
+
+			if (!metadata.OfType<IAuthorizeData>().Any() || metadata.OfType<IAllowAnonymous>().Any())
 				return Task.CompletedTask;
 
 			operation.Security ??= [];
