@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using PropertyAggregator.Api.Security;
 using PropertyAggregator.Api.Contracts.Users;
+using PropertyAggregator.Api.Errors;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Features.Api.Users.AcceptConsents;
 using PropertyAggregator.Application.Features.Api.Users.GetCurrentUser;
@@ -14,7 +15,8 @@ public static class UserEndpoints
 {
 	public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder app)
 	{
-		RouteGroupBuilder group = app.MapGroup("/api/me").WithTags("Users").RequireAuthorization();
+		RouteGroupBuilder group = app.MapGroup("/api/me").WithTags("Users")
+			.RequireAuthorization(AuthorizationPolicies.Authenticated);
 
 		group.MapGet("/", GetCurrentAsync);
 		group.MapPost("/consents", AcceptConsentsAsync);
@@ -34,17 +36,14 @@ public static class UserEndpoints
 		return TypedResults.Ok(CurrentUserResponse.From(result));
 	}
 
-	private static async Task<Results<NoContent, ValidationProblem>> AcceptConsentsAsync(
+	private static async Task<Results<NoContent, ProblemHttpResult>> AcceptConsentsAsync(
 		AcceptConsentsRequest request,
 		ClaimsPrincipal principal,
 		[FromServices] ICommandHandler<AcceptConsentsCommand> handler,
 		CancellationToken cancellationToken)
 	{
 		if (!request.AcceptTerms)
-			return TypedResults.ValidationProblem(new Dictionary<string, string[]>
-			{
-				[nameof(request.AcceptTerms)] = ["The terms must be accepted to use the service."]
-			});
+			return ApiProblems.TermsMustBeAccepted();
 
 		await handler.HandleAsync(new AcceptConsentsCommand(principal.GetExternalId(), request.MarketingConsent),
 			cancellationToken);

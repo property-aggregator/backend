@@ -21,6 +21,7 @@ public static class AuthenticationExtensions
 			AuthorizationPolicies.TermsAccepted,
 			policy => policy.RequireAuthenticatedUser().AddRequirements(new TermsAcceptedRequirement())));
 		services.AddScoped<IAuthorizationHandler, TermsAcceptedHandler>();
+		services.AddSingleton<IAuthorizationMiddlewareResultHandler, ProblemDetailsAuthorizationResultHandler>();
 
 		return services;
 	}

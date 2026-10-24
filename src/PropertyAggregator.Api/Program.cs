@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using PropertyAggregator.Api.Security;
 using PropertyAggregator.Api.Endpoints;
+using PropertyAggregator.Api.Errors;
 using PropertyAggregator.Infrastructure;
 using PropertyAggregator.Infrastructure.Services;
 using Scalar.AspNetCore;
@@ -9,7 +10,7 @@ using Scalar.AspNetCore;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.Services.AddProblemDetails();
+builder.Services.AddApiProblemDetails();
 builder.Services.AddOpenApi(options => options.AddBearerSecurity());
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddPersistence();
