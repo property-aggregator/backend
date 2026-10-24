@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Domain.Enums;
 using PropertyAggregator.Domain.Models;
@@ -16,7 +17,20 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 	public DbSet<PriceStatistic> PriceStatistics => Set<PriceStatistic>();
 	public DbSet<User> Users => Set<User>();
 	public DbSet<UserConsent> UserConsents => Set<UserConsent>();
+	public DbSet<UserFavorite> UserFavorites => Set<UserFavorite>();
 	internal DbSet<GeocodingCacheEntry> GeocodingCache => Set<GeocodingCacheEntry>();
+
+	public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+		}
+		catch (DbUpdateException exception) when (exception.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
+		{
+			throw new UniqueConstraintViolationException(exception);
+		}
+	}
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{

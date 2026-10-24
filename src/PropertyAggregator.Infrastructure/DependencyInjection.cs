@@ -29,6 +29,9 @@ public static class DependencyInjection
 			.WithScopedLifetime()
 			.AddClasses(classes => classes.InNamespaces(handlersNamespace).AssignableTo(typeof(ICommandHandler<>)))
 			.AsImplementedInterfaces()
+			.WithScopedLifetime()
+			.AddClasses(classes => classes.InNamespaces(handlersNamespace).AssignableTo(typeof(ICommandHandler<,>)))
+			.AsImplementedInterfaces()
 			.WithScopedLifetime());
 
 	public static IServiceCollection AddConsentVersions(this IServiceCollection services) =>

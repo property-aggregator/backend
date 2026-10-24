@@ -11,6 +11,11 @@ internal sealed class UserRepository(AppDbContext db) : IUserRepository
 			.Include(user => user.Consents)
 			.FirstOrDefaultAsync(user => user.ExternalId == externalId, cancellationToken);
 
+	public Task<User?> GetWithFavoritesAsync(string externalId, CancellationToken cancellationToken) =>
+		db.Users
+			.Include(user => user.Favorites)
+			.FirstOrDefaultAsync(user => user.ExternalId == externalId, cancellationToken);
+
 	public async Task<User> GetOrCreateAsync(string externalId, DateTime now, CancellationToken cancellationToken)
 	{
 		User? user = await GetByExternalIdAsync(externalId, cancellationToken);

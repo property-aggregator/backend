@@ -33,6 +33,7 @@ app.UseAuthorization();
 app.MapDefaultEndpoints();
 app.MapPropertyEndpoints();
 app.MapUserEndpoints();
+app.MapFavoriteEndpoints();
 
 if (app.Environment.IsDevelopment())
 {

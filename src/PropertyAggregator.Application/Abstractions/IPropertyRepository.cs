@@ -6,6 +6,8 @@ public interface IPropertyRepository
 {
 	Task<Property?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
+	Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken);
+
 	Task<Property?> GetBySourceAsync(string sourcePortal, string sourceId, CancellationToken cancellationToken);
 
 	Task<IReadOnlyList<Property>> ListPendingGeocodingAsync(int batchSize, CancellationToken cancellationToken);

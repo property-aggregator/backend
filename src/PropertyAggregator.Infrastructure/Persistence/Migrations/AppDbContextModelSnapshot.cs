@@ -373,6 +373,29 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                     b.ToTable("userConsents", (string)null);
                 });
 
+            modelBuilder.Entity("PropertyAggregator.Domain.Models.UserFavorite", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("userId");
+
+                    b.Property<Guid>("PropertyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("propertyId");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdAt");
+
+                    b.HasKey("UserId", "PropertyId")
+                        .HasName("pK_userFavorites");
+
+                    b.HasIndex("PropertyId")
+                        .HasDatabaseName("iX_userFavorites_propertyId");
+
+                    b.ToTable("userFavorites", (string)null);
+                });
+
             modelBuilder.Entity("PropertyAggregator.Infrastructure.Geocoding.GeocodingCacheEntry", b =>
                 {
                     b.Property<string>("Query")
@@ -418,6 +441,23 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fK_userConsents_users_userId");
                 });
 
+            modelBuilder.Entity("PropertyAggregator.Domain.Models.UserFavorite", b =>
+                {
+                    b.HasOne("PropertyAggregator.Domain.Models.Property", null)
+                        .WithMany()
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fK_userFavorites_properties_propertyId");
+
+                    b.HasOne("PropertyAggregator.Domain.Models.User", null)
+                        .WithMany("Favorites")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fK_userFavorites_users_userId");
+                });
+
             modelBuilder.Entity("PropertyAggregator.Domain.Models.Property", b =>
                 {
                     b.Navigation("PropertyPriceHistories");
@@ -426,6 +466,8 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("PropertyAggregator.Domain.Models.User", b =>
                 {
                     b.Navigation("Consents");
+
+                    b.Navigation("Favorites");
                 });
 #pragma warning restore 612, 618
         }
