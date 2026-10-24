@@ -7,6 +7,7 @@ using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Common;
 using PropertyAggregator.Application.Features.Api.Properties;
 using PropertyAggregator.Application.Features.Api.Properties.GetById;
+using PropertyAggregator.Application.Features.Api.Properties.GetLatest;
 using PropertyAggregator.Application.Features.Api.Properties.GetPaged;
 
 namespace PropertyAggregator.Api.Endpoints;
@@ -19,6 +20,7 @@ public static class PropertyEndpoints
 			.RequireAuthorization(AuthorizationPolicies.TermsAccepted);
 
 		group.MapGet("/", GetPagedAsync);
+		group.MapGet("/latest", GetLatestAsync).AllowAnonymous();
 		group.MapGet("/{id:guid}", GetByIdAsync);
 
 		return app;
@@ -37,6 +39,15 @@ public static class PropertyEndpoints
 			result.PageSize,
 			result.TotalCount,
 			result.TotalPages));
+	}
+
+	private static async Task<Ok<IReadOnlyList<PropertyResponse>>> GetLatestAsync(
+		[FromServices] IQueryHandler<GetLatestQuery, IReadOnlyList<PropertyResult>> handler,
+		CancellationToken cancellationToken)
+	{
+		IReadOnlyList<PropertyResult> result = await handler.HandleAsync(new GetLatestQuery(), cancellationToken);
+
+		return TypedResults.Ok<IReadOnlyList<PropertyResponse>>([.. result.Select(PropertyResponse.From)]);
 	}
 
 	private static async Task<Results<Ok<PropertyResponse>, NotFound>> GetByIdAsync(

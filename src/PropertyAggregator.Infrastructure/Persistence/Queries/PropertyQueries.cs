@@ -46,6 +46,16 @@ internal sealed class PropertyQueries(AppDbContext db) : IPropertyQueries
 			.Select(Projection)
 			.FirstOrDefaultAsync(cancellationToken);
 
+	public async Task<IReadOnlyList<PropertyResult>> GetLatestAsync(int count, CancellationToken cancellationToken) =>
+		await db.Properties
+			.AsNoTracking()
+			.Where(property => property.ArchivedAt == null)
+			.OrderByDescending(property => property.FirstSeenAt)
+			.ThenBy(property => property.Id)
+			.Take(count)
+			.Select(Projection)
+			.ToListAsync(cancellationToken);
+
 	public async Task<PagedResult<PropertyResult>> GetPagedAsync(
 		PropertySearchCriteria criteria,
 		PropertySort sort,
