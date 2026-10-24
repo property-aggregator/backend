@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using PropertyAggregator.Api.Security;
 using PropertyAggregator.Api.Contracts;
 using PropertyAggregator.Api.Contracts.Properties;
+using PropertyAggregator.Api.Errors;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Common;
 using PropertyAggregator.Application.Features.Api.Properties;
@@ -17,7 +17,7 @@ public static class PropertyEndpoints
 	public static IEndpointRouteBuilder MapPropertyEndpoints(this IEndpointRouteBuilder app)
 	{
 		RouteGroupBuilder group = app.MapGroup("/api/properties").WithTags("Properties")
-			.RequireAuthorization(AuthorizationPolicies.TermsAccepted);
+			.RequireAuthorization();
 
 		group.MapGet("/", GetPagedAsync);
 		group.MapGet("/latest", GetLatestAsync).AllowAnonymous();
@@ -50,13 +50,13 @@ public static class PropertyEndpoints
 		return TypedResults.Ok<IReadOnlyList<PropertyResponse>>([.. result.Select(PropertyResponse.From)]);
 	}
 
-	private static async Task<Results<Ok<PropertyResponse>, NotFound>> GetByIdAsync(
+	private static async Task<Results<Ok<PropertyResponse>, ProblemHttpResult>> GetByIdAsync(
 		Guid id,
 		[FromServices] IQueryHandler<GetByIdQuery, PropertyResult?> handler,
 		CancellationToken cancellationToken)
 	{
 		PropertyResult? property = await handler.HandleAsync(new GetByIdQuery(id), cancellationToken);
 
-		return property is null ? TypedResults.NotFound() : TypedResults.Ok(PropertyResponse.From(property));
+		return property is null ? ApiProblems.PropertyNotFound() : TypedResults.Ok(PropertyResponse.From(property));
 	}
 }

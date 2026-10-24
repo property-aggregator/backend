@@ -9,6 +9,9 @@ internal sealed class PropertyRepository(AppDbContext db) : IPropertyRepository
 	public Task<Property?> GetByIdAsync(Guid id, CancellationToken cancellationToken) =>
 		db.Properties.FirstOrDefaultAsync(property => property.Id == id, cancellationToken);
 
+	public Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken) =>
+		db.Properties.AnyAsync(property => property.Id == id, cancellationToken);
+
 	public Task<Property?> GetBySourceAsync(string sourcePortal, string sourceId, CancellationToken cancellationToken) =>
 		db.Properties.FirstOrDefaultAsync(
 			property => property.SourcePortal == sourcePortal && property.SourceId == sourceId,

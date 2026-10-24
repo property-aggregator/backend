@@ -16,6 +16,11 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 		builder.Property(user => user.ExternalId).HasMaxLength(128);
 		builder.HasIndex(user => user.ExternalId).IsUnique();
 
+		builder.HasMany(user => user.Favorites)
+			.WithOne()
+			.HasForeignKey(favorite => favorite.UserId)
+			.OnDelete(DeleteBehavior.Cascade);
+
 		builder.HasMany(user => user.Consents)
 			.WithOne()
 			.HasForeignKey(consent => consent.UserId)

@@ -9,6 +9,8 @@ public interface IPropertyQueries
 
 	Task<IReadOnlyList<PropertyResult>> GetLatestAsync(int count, CancellationToken cancellationToken);
 
+	Task<IReadOnlyList<PropertyResult>> GetFavoritesAsync(string externalId, CancellationToken cancellationToken);
+
 	Task<PagedResult<PropertyResult>> GetPagedAsync(
 		PropertySearchCriteria criteria,
 		PropertySort sort,
