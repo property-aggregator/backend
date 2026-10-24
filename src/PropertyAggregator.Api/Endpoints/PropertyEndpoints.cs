@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PropertyAggregator.Api.Contracts;
 using PropertyAggregator.Api.Contracts.Properties;
 using PropertyAggregator.Api.Errors;
+using PropertyAggregator.Api.Validation;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Common;
 using PropertyAggregator.Application.Features.Api.Properties;
@@ -19,7 +20,7 @@ public static class PropertyEndpoints
 		RouteGroupBuilder group = app.MapGroup("/api/properties").WithTags("Properties")
 			.RequireAuthorization();
 
-		group.MapGet("/", GetPagedAsync);
+		group.MapGet("/", GetPagedAsync).WithValidation<GetPagedRequest>();
 		group.MapGet("/latest", GetLatestAsync).AllowAnonymous();
 		group.MapGet("/{id:guid}", GetByIdAsync);
 
