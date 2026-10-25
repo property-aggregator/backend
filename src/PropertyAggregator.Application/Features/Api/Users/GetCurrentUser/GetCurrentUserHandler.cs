@@ -16,6 +16,7 @@ public sealed class GetCurrentUserHandler(
 			user.Id,
 			user.HasAcceptedTerms(consentVersions.Terms),
 			consentVersions.Terms,
-			user.HasMarketingConsent);
+			user.HasMarketingConsent,
+			User.FavoritesLimit);
 	}
 }

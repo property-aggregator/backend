@@ -4,4 +4,5 @@ public sealed record CurrentUserResult(
 	Guid Id,
 	bool TermsAccepted,
 	string RequiredTermsVersion,
-	bool MarketingConsent);
+	bool MarketingConsent,
+	int FavoritesLimit);
