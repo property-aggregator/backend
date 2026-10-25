@@ -5,9 +5,9 @@ using PropertyAggregator.Domain.Enums;
 namespace PropertyAggregator.Api.Contracts.Properties;
 
 public sealed record GetPagedRequest(
-	EnumQueryParameter<PropertyType>? PropertyType = null,
-	EnumQueryParameter<TransactionType>? TransactionType = null,
-	EnumQueryParameter<MarketType>? MarketType = null,
+	PropertyType? PropertyType = null,
+	TransactionType? TransactionType = null,
+	MarketType? MarketType = null,
 	bool? IsArchived = null,
 	string? Location = null,
 	decimal? MinPrice = null,
@@ -16,15 +16,15 @@ public sealed record GetPagedRequest(
 	decimal? MaxAreaM2 = null,
 	int? MinRooms = null,
 	int? MaxRooms = null,
-	EnumQueryParameter<PropertySort>? Sort = null,
+	PropertySort? Sort = null,
 	int Page = 1,
 	int PageSize = GetPagedQuery.DefaultPageSize)
 {
 	public GetPagedQuery ToQuery() => new(
 		new PropertySearchCriteria(
-			PropertyType?.Value,
-			TransactionType?.Value,
-			MarketType?.Value,
+			PropertyType,
+			TransactionType,
+			MarketType,
 			IsArchived,
 			Location,
 			MinPrice,
@@ -33,7 +33,7 @@ public sealed record GetPagedRequest(
 			MaxAreaM2,
 			MinRooms,
 			MaxRooms),
-		Sort?.Value ?? PropertySort.Newest,
+		Sort ?? PropertySort.Newest,
 		Page,
 		PageSize);
 }
