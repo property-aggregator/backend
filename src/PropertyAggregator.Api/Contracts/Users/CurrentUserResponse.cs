@@ -6,8 +6,9 @@ public sealed record CurrentUserResponse(
 	Guid Id,
 	bool TermsAccepted,
 	string RequiredTermsVersion,
-	bool MarketingConsent)
+	bool MarketingConsent,
+	int FavoritesLimit)
 {
 	public static CurrentUserResponse From(CurrentUserResult result) =>
-		new(result.Id, result.TermsAccepted, result.RequiredTermsVersion, result.MarketingConsent);
+		new(result.Id, result.TermsAccepted, result.RequiredTermsVersion, result.MarketingConsent, result.FavoritesLimit);
 }

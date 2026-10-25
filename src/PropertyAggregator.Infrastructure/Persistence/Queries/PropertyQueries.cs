@@ -56,15 +56,18 @@ internal sealed class PropertyQueries(AppDbContext db) : IPropertyQueries
 			.Select(Projection)
 			.ToListAsync(cancellationToken);
 
-	public async Task<IReadOnlyList<PropertyResult>> GetFavoritesAsync(string externalId,
-		CancellationToken cancellationToken)
-	{
-		List<Guid> propertyIds = await db.UserFavorites
+	public async Task<IReadOnlyList<Guid>> GetFavoriteIdsAsync(string externalId, CancellationToken cancellationToken) =>
+		await db.UserFavorites
 			.AsNoTracking()
 			.Where(favorite => db.Users.Any(user => user.Id == favorite.UserId && user.ExternalId == externalId))
 			.OrderByDescending(favorite => favorite.CreatedAt)
 			.Select(favorite => favorite.PropertyId)
 			.ToListAsync(cancellationToken);
+
+	public async Task<IReadOnlyList<PropertyResult>> GetFavoritesAsync(string externalId,
+		CancellationToken cancellationToken)
+	{
+		List<Guid> propertyIds = [.. await GetFavoriteIdsAsync(externalId, cancellationToken)];
 
 		List<PropertyResult> properties = await db.Properties
 			.AsNoTracking()

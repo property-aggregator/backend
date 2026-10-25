@@ -21,8 +21,11 @@ public static class PropertyEndpoints
 			.RequireAuthorization();
 
 		group.MapGet("/", GetPagedAsync).WithValidation<GetPagedRequest>();
-		group.MapGet("/latest", GetLatestAsync).AllowAnonymous();
-		group.MapGet("/{id:guid}", GetByIdAsync);
+		group.MapGet("/latest", GetLatestAsync)
+			.AllowAnonymous()
+			.WithSummary("Latest properties")
+			.WithDescription($"Returns the {GetLatestQuery.Count} newest active properties. Public: no sign-in required.");
+		group.MapGet("/{id:guid}", GetByIdAsync).ProducesProblem(StatusCodes.Status404NotFound);
 
 		return app;
 	}

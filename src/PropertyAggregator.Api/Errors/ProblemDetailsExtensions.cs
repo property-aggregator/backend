@@ -18,6 +18,7 @@ public static class ProblemDetailsExtensions
 				{ Status: StatusCodes.Status409Conflict } => ErrorCodes.Conflict,
 				{ Status: StatusCodes.Status503ServiceUnavailable } => ErrorCodes.ServiceUnavailable,
 				{ Status: >= StatusCodes.Status500InternalServerError } => ErrorCodes.InternalError,
+				{ Status: >= StatusCodes.Status400BadRequest and < StatusCodes.Status500InternalServerError } => ErrorCodes.BadRequest,
 				_ => null
 			};
 

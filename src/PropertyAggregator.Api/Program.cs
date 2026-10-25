@@ -13,7 +13,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.Services.AddApiProblemDetails();
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
-builder.Services.AddOpenApi(options => options.AddBearerSecurity());
+builder.Services.AddOpenApi(options => options.AddBearerSecurity().AddErrorDocumentation());
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddPersistence();
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
@@ -25,6 +25,7 @@ builder.Services.AddJwtAuthentication();
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
 	options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+	options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
 });
 builder.Services.AddApiHandlers();
 

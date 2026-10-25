@@ -7,11 +7,18 @@ namespace PropertyAggregator.Api.Validators;
 
 public sealed class GetPagedRequestValidator : AbstractValidator<GetPagedRequest>
 {
-	private const int MaxLocationLength = 200;
+	public const int MaxLocationLength = 200;
+
+	public const int MaxPage = int.MaxValue / GetPagedQuery.MaxPageSize;
 
 	public GetPagedRequestValidator()
 	{
 		RuleFor(request => request.Location).MaximumLength(MaxLocationLength).WithErrorCode(ValidationCodes.TooLong);
+
+		RuleFor(request => request.PropertyType).IsInEnum().WithErrorCode(ValidationCodes.InvalidValue);
+		RuleFor(request => request.TransactionType).IsInEnum().WithErrorCode(ValidationCodes.InvalidValue);
+		RuleFor(request => request.MarketType).IsInEnum().WithErrorCode(ValidationCodes.InvalidValue);
+		RuleFor(request => request.Sort).IsInEnum().WithErrorCode(ValidationCodes.InvalidValue);
 
 		RuleFor(request => request.MinPrice).NonNegative();
 		RuleFor(request => request.MaxPrice).NonNegative();
@@ -34,7 +41,7 @@ public sealed class GetPagedRequestValidator : AbstractValidator<GetPagedRequest
 			.WithErrorCode(ValidationCodes.MaxLessThanMin);
 
 		RuleFor(request => request.Page)
-			.InclusiveBetween(1, int.MaxValue / GetPagedQuery.MaxPageSize)
+			.InclusiveBetween(1, MaxPage)
 			.WithErrorCode(ValidationCodes.OutOfRange);
 		RuleFor(request => request.PageSize)
 			.InclusiveBetween(1, GetPagedQuery.MaxPageSize)

@@ -19,7 +19,7 @@ public static class UserEndpoints
 			.RequireAuthorization(AuthorizationPolicies.Authenticated);
 
 		group.MapGet("/", GetCurrentAsync);
-		group.MapPost("/consents", AcceptConsentsAsync);
+		group.MapPost("/consents", AcceptConsentsAsync).ProducesProblem(StatusCodes.Status400BadRequest);
 		group.MapPut("/consents/marketing", SetMarketingConsentAsync);
 
 		return app;
