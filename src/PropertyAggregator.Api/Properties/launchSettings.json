@@ -12,7 +12,7 @@
         "ConnectionStrings__DefaultConnection": "Host=localhost;Port=5432;Database=property_aggregator;Username=postgres;Password=postgres",
         "AUTH0_DOMAIN": "dev-80qfdf2a2flv03ea.eu.auth0.com",
         "AUTH0_AUDIENCE": "https://api.propertyaggregator",
-        "CORS_ALLOWED_ORIGINS": "http://localhost:5173",
+        "CORS_ALLOWED_ORIGINS": "http://localhost:3000",
         "TERMS_VERSION": "2026-10-23",
         "MARKETING_CONSENT_VERSION": "2026-10-23"
       }
@@ -28,7 +28,7 @@
         "ConnectionStrings__DefaultConnection": "Host=localhost;Port=5432;Database=property_aggregator;Username=postgres;Password=postgres",
         "AUTH0_DOMAIN": "dev-80qfdf2a2flv03ea.eu.auth0.com",
         "AUTH0_AUDIENCE": "https://api.propertyaggregator",
-        "CORS_ALLOWED_ORIGINS": "http://localhost:5173",
+        "CORS_ALLOWED_ORIGINS": "http://localhost:3000",
         "TERMS_VERSION": "2026-10-23",
         "MARKETING_CONSENT_VERSION": "2026-10-23"
       }
