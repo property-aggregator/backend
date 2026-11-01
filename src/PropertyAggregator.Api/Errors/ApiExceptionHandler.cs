@@ -1,4 +1,6 @@
 using System.Data.Common;
+using System.Text.Json;
+using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using PropertyAggregator.Application.Abstractions;
 
@@ -13,6 +15,9 @@ internal sealed class ApiExceptionHandler(
 		Exception exception,
 		CancellationToken cancellationToken)
 	{
+		if (exception is ValidationException validationException)
+			return await WriteValidationProblemAsync(context, validationException);
+
 		int? status = InnerChain(exception).Select(MapToStatus).FirstOrDefault(s => s is not null);
 
 		if (status is null)
@@ -35,6 +40,25 @@ internal sealed class ApiExceptionHandler(
 			ProblemDetails = { Status = status }
 		});
 	}
+
+	// Invalid input is an expected client error, so it is not logged.
+	private async ValueTask<bool> WriteValidationProblemAsync(HttpContext context, ValidationException exception)
+	{
+		Dictionary<string, string[]> errors = exception.Errors
+			.GroupBy(failure => ToCamelCase(failure.PropertyName))
+			.ToDictionary(group => group.Key, group => group.Select(failure => failure.ErrorCode).Distinct().ToArray());
+
+		context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+		return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
+		{
+			HttpContext = context,
+			ProblemDetails = new HttpValidationProblemDetails(errors) { Status = StatusCodes.Status400BadRequest }
+		});
+	}
+
+	private static string ToCamelCase(string propertyName) =>
+		string.Join('.', propertyName.Split('.').Select(JsonNamingPolicy.CamelCase.ConvertName));
 
 	private static int? MapToStatus(Exception exception) => exception switch
 	{

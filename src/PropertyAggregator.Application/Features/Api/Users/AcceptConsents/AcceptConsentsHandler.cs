@@ -4,6 +4,7 @@ using PropertyAggregator.Domain.Models;
 namespace PropertyAggregator.Application.Features.Api.Users.AcceptConsents;
 
 public sealed class AcceptConsentsHandler(
+	ICurrentUser currentUser,
 	IUserRepository users,
 	IUnitOfWork unitOfWork,
 	IConsentVersions consentVersions,
@@ -13,7 +14,7 @@ public sealed class AcceptConsentsHandler(
 	{
 		DateTime now = timeProvider.GetUtcNow().UtcDateTime;
 
-		User user = await users.GetOrCreateAsync(command.ExternalId, now, cancellationToken);
+		User user = await users.GetOrCreateAsync(currentUser.ExternalId, now, cancellationToken);
 
 		user.AcceptTerms(consentVersions.Terms, now);
 		user.SetMarketingConsent(consentVersions.Marketing, command.MarketingConsent, now);

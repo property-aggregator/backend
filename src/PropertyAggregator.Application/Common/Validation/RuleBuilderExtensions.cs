@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace PropertyAggregator.Api.Validation;
+namespace PropertyAggregator.Application.Common.Validation;
 
 public static class RuleBuilderExtensions
 {

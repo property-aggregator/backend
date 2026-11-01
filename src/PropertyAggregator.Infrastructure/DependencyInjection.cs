@@ -1,6 +1,8 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PropertyAggregator.Application.Abstractions;
+using PropertyAggregator.Application.Common.Validation;
 using PropertyAggregator.Infrastructure.Geocoding;
 using PropertyAggregator.Infrastructure.Http;
 using PropertyAggregator.Infrastructure.Persistence;
@@ -21,7 +23,8 @@ public static class DependencyInjection
 	public static IServiceCollection AddWorkerHandlers(this IServiceCollection services) =>
 		services.AddHandlersFrom("PropertyAggregator.Application.Features.Worker");
 
-	private static IServiceCollection AddHandlersFrom(this IServiceCollection services, string handlersNamespace) =>
+	private static IServiceCollection AddHandlersFrom(this IServiceCollection services, string handlersNamespace)
+	{
 		services.Scan(scan => scan
 			.FromAssemblies(typeof(ICommandHandler<>).Assembly)
 			.AddClasses(classes => classes.InNamespaces(handlersNamespace).AssignableTo(typeof(IQueryHandler<,>)))
@@ -32,7 +35,18 @@ public static class DependencyInjection
 			.WithScopedLifetime()
 			.AddClasses(classes => classes.InNamespaces(handlersNamespace).AssignableTo(typeof(ICommandHandler<,>)))
 			.AsImplementedInterfaces()
+			.WithScopedLifetime()
+			.AddClasses(classes => classes.InNamespaces(handlersNamespace).AssignableTo(typeof(IValidator<>)))
+			.AsImplementedInterfaces()
 			.WithScopedLifetime());
+
+		// Every handler is wrapped, so the validators of its query or command run whichever host calls it.
+		services.TryDecorate(typeof(IQueryHandler<,>), typeof(ValidationQueryHandler<,>));
+		services.TryDecorate(typeof(ICommandHandler<>), typeof(ValidationCommandHandler<>));
+		services.TryDecorate(typeof(ICommandHandler<,>), typeof(ValidationCommandHandler<,>));
+
+		return services;
+	}
 
 	public static IServiceCollection AddConsentVersions(this IServiceCollection services) =>
 		services.AddSingleton<IConsentVersions>(new EnvironmentConsentVersions());

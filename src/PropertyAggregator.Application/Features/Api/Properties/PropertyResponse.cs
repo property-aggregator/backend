@@ -1,9 +1,8 @@
 using PropertyAggregator.Domain.Enums;
-using PropertyAggregator.Domain.ValueObjects;
 
 namespace PropertyAggregator.Application.Features.Api.Properties;
 
-public sealed record PropertyResult(
+public sealed record PropertyResponse(
 	Guid Id,
 	string SourcePortal,
 	string SourceUrl,
@@ -22,7 +21,8 @@ public sealed record PropertyResult(
 	string? City,
 	string? District,
 	string? Street,
-	GeoPoint? Location,
+	double? Latitude,
+	double? Longitude,
 	DateTime FirstSeenAt,
 	DateTime LastSeenAt,
 	DateTime UpdatedAt,

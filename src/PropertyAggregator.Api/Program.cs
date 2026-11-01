@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using FluentValidation;
 using PropertyAggregator.Api.Security;
 using PropertyAggregator.Api.Endpoints;
 using PropertyAggregator.Api.Errors;
@@ -12,7 +11,6 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.Services.AddApiProblemDetails();
-builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 builder.Services.AddOpenApi(options => options.AddBearerSecurity().AddErrorDocumentation());
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddPersistence();

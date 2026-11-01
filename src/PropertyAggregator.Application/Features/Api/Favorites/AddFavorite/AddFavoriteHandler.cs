@@ -5,6 +5,7 @@ using PropertyAggregator.Domain.Models;
 namespace PropertyAggregator.Application.Features.Api.Favorites.AddFavorite;
 
 public sealed class AddFavoriteHandler(
+	ICurrentUser currentUser,
 	IUserRepository users,
 	IPropertyRepository properties,
 	IUnitOfWork unitOfWork,
@@ -17,7 +18,7 @@ public sealed class AddFavoriteHandler(
 
 		DateTime now = timeProvider.GetUtcNow().UtcDateTime;
 
-		User user = await users.GetWithFavoritesAsync(command.ExternalId, cancellationToken)
+		User user = await users.GetWithFavoritesAsync(currentUser.ExternalId, cancellationToken)
 			?? throw new InvalidOperationException("The user was not found; the terms policy should have rejected the request.");
 
 		AddFavoriteResult result = user.AddFavorite(command.PropertyId, now);

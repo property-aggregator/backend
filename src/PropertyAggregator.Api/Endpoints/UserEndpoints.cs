@@ -1,9 +1,6 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using PropertyAggregator.Api.Security;
-using PropertyAggregator.Api.Contracts.Users;
-using PropertyAggregator.Api.Errors;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Features.Api.Users.AcceptConsents;
 using PropertyAggregator.Application.Features.Api.Users.GetCurrentUser;
@@ -19,46 +16,33 @@ public static class UserEndpoints
 			.RequireAuthorization(AuthorizationPolicies.Authenticated);
 
 		group.MapGet("/", GetCurrentAsync);
-		group.MapPost("/consents", AcceptConsentsAsync).ProducesProblem(StatusCodes.Status400BadRequest);
+		group.MapPost("/consents", AcceptConsentsAsync).ProducesValidationProblem();
 		group.MapPut("/consents/marketing", SetMarketingConsentAsync);
 
 		return app;
 	}
 
 	private static async Task<Ok<CurrentUserResponse>> GetCurrentAsync(
-		ClaimsPrincipal principal,
-		[FromServices] IQueryHandler<GetCurrentUserQuery, CurrentUserResult> handler,
-		CancellationToken cancellationToken)
-	{
-		CurrentUserResult result =
-			await handler.HandleAsync(new GetCurrentUserQuery(principal.GetExternalId()), cancellationToken);
+		[FromServices] IQueryHandler<GetCurrentUserQuery, CurrentUserResponse> handler,
+		CancellationToken cancellationToken) =>
+		TypedResults.Ok(await handler.HandleAsync(new GetCurrentUserQuery(), cancellationToken));
 
-		return TypedResults.Ok(CurrentUserResponse.From(result));
-	}
-
-	private static async Task<Results<NoContent, ProblemHttpResult>> AcceptConsentsAsync(
-		AcceptConsentsRequest request,
-		ClaimsPrincipal principal,
+	private static async Task<NoContent> AcceptConsentsAsync(
+		AcceptConsentsCommand command,
 		[FromServices] ICommandHandler<AcceptConsentsCommand> handler,
 		CancellationToken cancellationToken)
 	{
-		if (!request.AcceptTerms)
-			return ApiProblems.TermsMustBeAccepted();
-
-		await handler.HandleAsync(new AcceptConsentsCommand(principal.GetExternalId(), request.MarketingConsent),
-			cancellationToken);
+		await handler.HandleAsync(command, cancellationToken);
 
 		return TypedResults.NoContent();
 	}
 
 	private static async Task<NoContent> SetMarketingConsentAsync(
-		SetMarketingConsentRequest request,
-		ClaimsPrincipal principal,
+		SetMarketingConsentCommand command,
 		[FromServices] ICommandHandler<SetMarketingConsentCommand> handler,
 		CancellationToken cancellationToken)
 	{
-		await handler.HandleAsync(new SetMarketingConsentCommand(principal.GetExternalId(), request.Granted),
-			cancellationToken);
+		await handler.HandleAsync(command, cancellationToken);
 
 		return TypedResults.NoContent();
 	}

@@ -13,6 +13,5 @@ public static class ErrorCodes
 
 	public const string PropertyNotFound = "property_not_found";
 	public const string FavoritesLimitReached = "favorites_limit_reached";
-	public const string TermsMustBeAccepted = "terms_must_be_accepted";
 	public const string TermsNotAccepted = "terms_not_accepted";
 }
