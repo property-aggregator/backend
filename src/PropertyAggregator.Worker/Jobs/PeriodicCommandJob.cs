@@ -21,7 +21,7 @@ public abstract class PeriodicCommandJob<TCommand>(IServiceScopeFactory scopeFac
 			while (await timer.WaitForNextTickAsync(stoppingToken))
 				await RunCycleAsync(stoppingToken);
 		}
-		catch (OperationCanceledException)
+		catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
 		{
 			// graceful shutdown
 		}
@@ -36,7 +36,7 @@ public abstract class PeriodicCommandJob<TCommand>(IServiceScopeFactory scopeFac
 
 			await handler.HandleAsync(CreateCommand(), cancellationToken);
 		}
-		catch (Exception exception) when (exception is not OperationCanceledException)
+		catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
 		{
 			logger.LogError(exception, "{Job} cycle failed; it will be retried on the next tick", GetType().Name);
 		}
