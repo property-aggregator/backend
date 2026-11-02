@@ -40,7 +40,6 @@ public static class DependencyInjection
 			.AsImplementedInterfaces()
 			.WithScopedLifetime());
 
-		// Every handler is wrapped, so the validators of its query or command run whichever host calls it.
 		services.TryDecorate(typeof(IQueryHandler<,>), typeof(ValidationQueryHandler<,>));
 		services.TryDecorate(typeof(ICommandHandler<>), typeof(ValidationCommandHandler<>));
 		services.TryDecorate(typeof(ICommandHandler<,>), typeof(ValidationCommandHandler<,>));
