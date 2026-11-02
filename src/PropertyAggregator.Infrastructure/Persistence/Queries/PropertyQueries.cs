@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Linq.Expressions;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using PropertyAggregator.Application.Abstractions;
@@ -15,7 +14,66 @@ internal sealed class PropertyQueries(AppDbContext db) : IPropertyQueries
 	private const int MaxLocationWords = 5;
 	private static readonly char[] LocationSeparators = [' ', ',', ';', '\t'];
 
-	private static readonly Expression<Func<Property, PropertyResponse>> Projection = property => new PropertyResponse(
+	public async Task<PropertyResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+	{
+		Property? property = await db.Properties
+			.AsNoTracking()
+			.FirstOrDefaultAsync(property => property.Id == id, cancellationToken);
+
+		return property is null ? null : ToResponse(property);
+	}
+
+	public async Task<IReadOnlyList<PropertyResponse>> GetLatestAsync(int count, CancellationToken cancellationToken)
+	{
+		List<Property> properties = await db.Properties
+			.AsNoTracking()
+			.Where(property => property.ArchivedAt == null)
+			.OrderByDescending(property => property.FirstSeenAt)
+			.ThenBy(property => property.Id)
+			.Take(count)
+			.ToListAsync(cancellationToken);
+
+		return [.. properties.Select(ToResponse)];
+	}
+
+	public async Task<IReadOnlyList<Guid>> GetFavoriteIdsAsync(string externalId, CancellationToken cancellationToken) =>
+		await db.UserFavorites
+			.AsNoTracking()
+			.Where(favorite => db.Users.Any(user => user.Id == favorite.UserId && user.ExternalId == externalId))
+			.OrderByDescending(favorite => favorite.CreatedAt)
+			.Select(favorite => favorite.PropertyId)
+			.ToListAsync(cancellationToken);
+
+	public async Task<IReadOnlyList<PropertyResponse>> GetFavoritesAsync(string externalId,
+		CancellationToken cancellationToken)
+	{
+		List<Guid> propertyIds = [.. await GetFavoriteIdsAsync(externalId, cancellationToken)];
+
+		List<Property> properties = await db.Properties
+			.AsNoTracking()
+			.Where(property => propertyIds.Contains(property.Id))
+			.ToListAsync(cancellationToken);
+
+		return [.. propertyIds.Join(properties, id => id, property => property.Id, (_, property) => ToResponse(property))];
+	}
+
+	public async Task<PagedResponse<PropertyResponse>> GetPagedAsync(GetPagedQuery query,
+		CancellationToken cancellationToken)
+	{
+		IQueryable<Property> properties = ApplyCriteria(db.Properties.AsNoTracking(), query);
+
+		int totalCount = await properties.CountAsync(cancellationToken);
+
+		List<Property> items = await ApplySort(properties, query.Sort)
+			.Skip((query.Page - 1) * query.PageSize)
+			.Take(query.PageSize)
+			.ToListAsync(cancellationToken);
+
+		return new PagedResponse<PropertyResponse>([.. items.Select(ToResponse)], query.Page, query.PageSize, totalCount);
+	}
+
+	// Mapped in memory: Location goes through a value converter, so its coordinates cannot be read inside the SQL query.
+	private static PropertyResponse ToResponse(Property property) => new(
 		property.Id,
 		property.SourcePortal,
 		property.SourceUrl,
@@ -34,67 +92,12 @@ internal sealed class PropertyQueries(AppDbContext db) : IPropertyQueries
 		property.City,
 		property.District,
 		property.Street,
-		property.Location != null ? property.Location.Latitude : (double?)null,
-		property.Location != null ? property.Location.Longitude : (double?)null,
+		property.Location?.Latitude,
+		property.Location?.Longitude,
 		property.FirstSeenAt,
 		property.LastSeenAt,
 		property.UpdatedAt,
 		property.ArchivedAt);
-
-	public Task<PropertyResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken) =>
-		db.Properties
-			.AsNoTracking()
-			.Where(property => property.Id == id)
-			.Select(Projection)
-			.FirstOrDefaultAsync(cancellationToken);
-
-	public async Task<IReadOnlyList<PropertyResponse>> GetLatestAsync(int count, CancellationToken cancellationToken) =>
-		await db.Properties
-			.AsNoTracking()
-			.Where(property => property.ArchivedAt == null)
-			.OrderByDescending(property => property.FirstSeenAt)
-			.ThenBy(property => property.Id)
-			.Take(count)
-			.Select(Projection)
-			.ToListAsync(cancellationToken);
-
-	public async Task<IReadOnlyList<Guid>> GetFavoriteIdsAsync(string externalId, CancellationToken cancellationToken) =>
-		await db.UserFavorites
-			.AsNoTracking()
-			.Where(favorite => db.Users.Any(user => user.Id == favorite.UserId && user.ExternalId == externalId))
-			.OrderByDescending(favorite => favorite.CreatedAt)
-			.Select(favorite => favorite.PropertyId)
-			.ToListAsync(cancellationToken);
-
-	public async Task<IReadOnlyList<PropertyResponse>> GetFavoritesAsync(string externalId,
-		CancellationToken cancellationToken)
-	{
-		List<Guid> propertyIds = [.. await GetFavoriteIdsAsync(externalId, cancellationToken)];
-
-		List<PropertyResponse> properties = await db.Properties
-			.AsNoTracking()
-			.Where(property => propertyIds.Contains(property.Id))
-			.Select(Projection)
-			.ToListAsync(cancellationToken);
-
-		return [.. propertyIds.Join(properties, id => id, property => property.Id, (_, property) => property)];
-	}
-
-	public async Task<PagedResponse<PropertyResponse>> GetPagedAsync(GetPagedQuery query,
-		CancellationToken cancellationToken)
-	{
-		IQueryable<Property> properties = ApplyCriteria(db.Properties.AsNoTracking(), query);
-
-		int totalCount = await properties.CountAsync(cancellationToken);
-
-		List<PropertyResponse> items = await ApplySort(properties, query.Sort)
-			.Skip((query.Page - 1) * query.PageSize)
-			.Take(query.PageSize)
-			.Select(Projection)
-			.ToListAsync(cancellationToken);
-
-		return new PagedResponse<PropertyResponse>(items, query.Page, query.PageSize, totalCount);
-	}
 
 	private static IQueryable<Property> ApplySort(IQueryable<Property> properties, PropertySort sort) => sort switch
 	{
