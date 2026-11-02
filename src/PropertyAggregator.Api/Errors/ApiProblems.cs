@@ -14,6 +14,12 @@ internal static class ApiProblems
 			"Favorites limit reached",
 			new Dictionary<string, object?> { ["limit"] = limit });
 
+	public static ProblemHttpResult AccessDenied() =>
+		Create(StatusCodes.Status403Forbidden, ErrorCodes.Forbidden, "Access denied");
+
+	public static ProblemHttpResult TermsNotAccepted() =>
+		Create(StatusCodes.Status403Forbidden, ErrorCodes.TermsNotAccepted, "The terms have not been accepted");
+
 	private static ProblemHttpResult Create(
 		int statusCode,
 		string code,

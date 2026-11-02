@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
-using Microsoft.AspNetCore.Mvc;
 using PropertyAggregator.Api.Errors;
 
 namespace PropertyAggregator.Api.Security;
@@ -25,18 +24,8 @@ public sealed class ProblemDetailsAuthorizationResultHandler : IAuthorizationMid
 			.OfType<TermsAcceptedRequirement>()
 			.Any() == true;
 
-		ProblemDetails problem = new()
-		{
-			Status = StatusCodes.Status403Forbidden,
-			Title = termsNotAccepted ? "The terms have not been accepted" : "Access denied"
-		};
+		IResult problem = termsNotAccepted ? ApiProblems.TermsNotAccepted() : ApiProblems.AccessDenied();
 
-		if (termsNotAccepted)
-			problem.Extensions["code"] = ErrorCodes.TermsNotAccepted;
-
-		context.Response.StatusCode = StatusCodes.Status403Forbidden;
-
-		await context.RequestServices.GetRequiredService<IProblemDetailsService>().TryWriteAsync(
-			new ProblemDetailsContext { HttpContext = context, ProblemDetails = problem });
+		await problem.ExecuteAsync(context);
 	}
 }
