@@ -5,9 +5,9 @@ namespace PropertyAggregator.Application.Features.Api.Properties.GetPaged;
 
 public sealed class GetPagedQueryValidator : AbstractValidator<GetPagedQuery>
 {
-	public const int MaxLocationLength = 200;
+	private const int MaxLocationLength = 200;
 
-	public const int MaxPage = int.MaxValue / GetPagedQuery.MaxPageSize;
+	private const int MaxPage = int.MaxValue / GetPagedQuery.MaxPageSize;
 
 	public GetPagedQueryValidator()
 	{
