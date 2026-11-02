@@ -14,9 +14,6 @@ internal static class ApiProblems
 			"Favorites limit reached",
 			new Dictionary<string, object?> { ["limit"] = limit });
 
-	public static ProblemHttpResult TermsMustBeAccepted() =>
-		Create(StatusCodes.Status400BadRequest, ErrorCodes.TermsMustBeAccepted, "The terms must be accepted");
-
 	private static ProblemHttpResult Create(
 		int statusCode,
 		string code,

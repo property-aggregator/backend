@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using PropertyAggregator.Api.Contracts;
-using PropertyAggregator.Api.Contracts.Properties;
 using PropertyAggregator.Api.Errors;
-using PropertyAggregator.Api.Validation;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Common;
 using PropertyAggregator.Application.Features.Api.Properties;
@@ -20,7 +17,7 @@ public static class PropertyEndpoints
 		RouteGroupBuilder group = app.MapGroup("/api/properties").WithTags("Properties")
 			.RequireAuthorization();
 
-		group.MapGet("/", GetPagedAsync).WithValidation<GetPagedRequest>();
+		group.MapGet("/", GetPagedAsync).ProducesValidationProblem();
 		group.MapGet("/latest", GetLatestAsync)
 			.AllowAnonymous()
 			.WithSummary("Latest properties")
@@ -31,36 +28,23 @@ public static class PropertyEndpoints
 	}
 
 	private static async Task<Ok<PagedResponse<PropertyResponse>>> GetPagedAsync(
-		[AsParameters] GetPagedRequest request,
-		[FromServices] IQueryHandler<GetPagedQuery, PagedResult<PropertyResult>> handler,
-		CancellationToken cancellationToken)
-	{
-		PagedResult<PropertyResult> result = await handler.HandleAsync(request.ToQuery(), cancellationToken);
-
-		return TypedResults.Ok(new PagedResponse<PropertyResponse>(
-			[.. result.Items.Select(PropertyResponse.From)],
-			result.Page,
-			result.PageSize,
-			result.TotalCount,
-			result.TotalPages));
-	}
+		[AsParameters] GetPagedQuery query,
+		[FromServices] IQueryHandler<GetPagedQuery, PagedResponse<PropertyResponse>> handler,
+		CancellationToken cancellationToken) =>
+		TypedResults.Ok(await handler.HandleAsync(query, cancellationToken));
 
 	private static async Task<Ok<IReadOnlyList<PropertyResponse>>> GetLatestAsync(
-		[FromServices] IQueryHandler<GetLatestQuery, IReadOnlyList<PropertyResult>> handler,
-		CancellationToken cancellationToken)
-	{
-		IReadOnlyList<PropertyResult> result = await handler.HandleAsync(new GetLatestQuery(), cancellationToken);
-
-		return TypedResults.Ok<IReadOnlyList<PropertyResponse>>([.. result.Select(PropertyResponse.From)]);
-	}
+		[FromServices] IQueryHandler<GetLatestQuery, IReadOnlyList<PropertyResponse>> handler,
+		CancellationToken cancellationToken) =>
+		TypedResults.Ok(await handler.HandleAsync(new GetLatestQuery(), cancellationToken));
 
 	private static async Task<Results<Ok<PropertyResponse>, ProblemHttpResult>> GetByIdAsync(
 		Guid id,
-		[FromServices] IQueryHandler<GetByIdQuery, PropertyResult?> handler,
+		[FromServices] IQueryHandler<GetByIdQuery, PropertyResponse?> handler,
 		CancellationToken cancellationToken)
 	{
-		PropertyResult? property = await handler.HandleAsync(new GetByIdQuery(id), cancellationToken);
+		PropertyResponse? property = await handler.HandleAsync(new GetByIdQuery(id), cancellationToken);
 
-		return property is null ? ApiProblems.PropertyNotFound() : TypedResults.Ok(PropertyResponse.From(property));
+		return property is null ? ApiProblems.PropertyNotFound() : TypedResults.Ok(property);
 	}
 }

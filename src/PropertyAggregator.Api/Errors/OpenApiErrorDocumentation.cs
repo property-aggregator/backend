@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
 using PropertyAggregator.Api.Security;
-using PropertyAggregator.Api.Validation;
+using PropertyAggregator.Application.Common.Validation;
 
 namespace PropertyAggregator.Api.Errors;
 

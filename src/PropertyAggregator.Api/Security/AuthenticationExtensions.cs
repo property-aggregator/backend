@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Infrastructure.Services;
 
 namespace PropertyAggregator.Api.Security;
@@ -22,6 +23,8 @@ public static class AuthenticationExtensions
 			policy => policy.RequireAuthenticatedUser().AddRequirements(new TermsAcceptedRequirement())));
 		services.AddScoped<IAuthorizationHandler, TermsAcceptedHandler>();
 		services.AddSingleton<IAuthorizationMiddlewareResultHandler, ProblemDetailsAuthorizationResultHandler>();
+		services.AddHttpContextAccessor();
+		services.AddScoped<ICurrentUser, HttpCurrentUser>();
 
 		return services;
 	}

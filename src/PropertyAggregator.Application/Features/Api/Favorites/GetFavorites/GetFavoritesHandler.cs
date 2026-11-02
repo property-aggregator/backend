@@ -3,9 +3,9 @@ using PropertyAggregator.Application.Features.Api.Properties;
 
 namespace PropertyAggregator.Application.Features.Api.Favorites.GetFavorites;
 
-public sealed class GetFavoritesHandler(IPropertyQueries queries)
-	: IQueryHandler<GetFavoritesQuery, IReadOnlyList<PropertyResult>>
+public sealed class GetFavoritesHandler(ICurrentUser currentUser, IPropertyQueries queries)
+	: IQueryHandler<GetFavoritesQuery, IReadOnlyList<PropertyResponse>>
 {
-	public Task<IReadOnlyList<PropertyResult>> HandleAsync(GetFavoritesQuery query, CancellationToken cancellationToken) =>
-		queries.GetFavoritesAsync(query.ExternalId, cancellationToken);
+	public Task<IReadOnlyList<PropertyResponse>> HandleAsync(GetFavoritesQuery query, CancellationToken cancellationToken) =>
+		queries.GetFavoritesAsync(currentUser.ExternalId, cancellationToken);
 }

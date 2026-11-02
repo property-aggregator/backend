@@ -4,15 +4,16 @@ using PropertyAggregator.Domain.Models;
 namespace PropertyAggregator.Application.Features.Api.Users.GetCurrentUser;
 
 public sealed class GetCurrentUserHandler(
+	ICurrentUser currentUser,
 	IUserRepository users,
 	IConsentVersions consentVersions,
-	TimeProvider timeProvider) : IQueryHandler<GetCurrentUserQuery, CurrentUserResult>
+	TimeProvider timeProvider) : IQueryHandler<GetCurrentUserQuery, CurrentUserResponse>
 {
-	public async Task<CurrentUserResult> HandleAsync(GetCurrentUserQuery query, CancellationToken cancellationToken)
+	public async Task<CurrentUserResponse> HandleAsync(GetCurrentUserQuery query, CancellationToken cancellationToken)
 	{
-		User user = await users.GetOrCreateAsync(query.ExternalId, timeProvider.GetUtcNow().UtcDateTime, cancellationToken);
+		User user = await users.GetOrCreateAsync(currentUser.ExternalId, timeProvider.GetUtcNow().UtcDateTime, cancellationToken);
 
-		return new CurrentUserResult(
+		return new CurrentUserResponse(
 			user.Id,
 			user.HasAcceptedTerms(consentVersions.Terms),
 			consentVersions.Terms,
