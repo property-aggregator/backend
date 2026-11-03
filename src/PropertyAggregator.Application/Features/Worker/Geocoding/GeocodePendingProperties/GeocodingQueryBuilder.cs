@@ -6,26 +6,18 @@ namespace PropertyAggregator.Application.Features.Worker.Geocoding.GeocodePendin
 
 internal static partial class GeocodingQueryBuilder
 {
-	public static IEnumerable<(string Query, LocationPrecision Precision)> Build(Property property)
-	{
-		if (string.IsNullOrWhiteSpace(property.City))
-			yield break;
+	public static string? BuildCityQuery(Property property) =>
+		string.IsNullOrWhiteSpace(property.City) ? null : Join(property.City, property.Province);
 
+	public static IEnumerable<(string Query, LocationPrecision Precision)> BuildDetailQueries(Property property)
+	{
 		string? street = NormalizeStreet(property.Street);
-		bool hasDistrict = !string.IsNullOrWhiteSpace(property.District);
 
 		if (street is not null)
-		{
-			if (hasDistrict)
-				yield return (Join(street, property.District, property.City, property.Province), LocationPrecision.Street);
+			yield return (Join(street, property.City), LocationPrecision.Street);
 
-			yield return (Join(street, property.City, property.Province), LocationPrecision.Street);
-		}
-
-		if (hasDistrict)
-			yield return (Join(property.District, property.City, property.Province), LocationPrecision.District);
-
-		yield return (Join(property.City, property.Province), LocationPrecision.City);
+		if (!string.IsNullOrWhiteSpace(property.District))
+			yield return (Join(property.District, property.City), LocationPrecision.District);
 	}
 
 	private static string? NormalizeStreet(string? street)
