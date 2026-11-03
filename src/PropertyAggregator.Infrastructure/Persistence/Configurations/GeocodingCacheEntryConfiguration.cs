@@ -11,6 +11,6 @@ internal sealed class GeocodingCacheEntryConfiguration : IEntityTypeConfiguratio
 		builder.ToTable("geocodingCache");
 
 		builder.HasKey(entry => entry.Query);
-		builder.Property(entry => entry.Query).HasMaxLength(200);
+		builder.Property(entry => entry.Query).HasMaxLength(400);
 	}
 }

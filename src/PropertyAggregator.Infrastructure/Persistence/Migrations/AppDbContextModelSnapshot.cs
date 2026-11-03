@@ -399,13 +399,17 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("PropertyAggregator.Infrastructure.Geocoding.GeocodingCacheEntry", b =>
                 {
                     b.Property<string>("Query")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)")
                         .HasColumnName("query");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("createdAt");
+
+                    b.Property<double?>("East")
+                        .HasColumnType("double precision")
+                        .HasColumnName("east");
 
                     b.Property<double?>("Latitude")
                         .HasColumnType("double precision")
@@ -414,6 +418,22 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                     b.Property<double?>("Longitude")
                         .HasColumnType("double precision")
                         .HasColumnName("longitude");
+
+                    b.Property<double?>("North")
+                        .HasColumnType("double precision")
+                        .HasColumnName("north");
+
+                    b.Property<int?>("PlaceRank")
+                        .HasColumnType("integer")
+                        .HasColumnName("placeRank");
+
+                    b.Property<double?>("South")
+                        .HasColumnType("double precision")
+                        .HasColumnName("south");
+
+                    b.Property<double?>("West")
+                        .HasColumnType("double precision")
+                        .HasColumnName("west");
 
                     b.HasKey("Query")
                         .HasName("pK_geocodingCache");
