@@ -18,9 +18,14 @@ public static class AuthenticationExtensions
 				options.MapInboundClaims = false;
 			});
 
-		services.AddAuthorization(options => options.AddPolicy(
-			AuthorizationPolicies.TermsAccepted,
-			policy => policy.RequireAuthenticatedUser().AddRequirements(new TermsAcceptedRequirement())));
+		services.AddAuthorization(options =>
+		{
+			options.AddPolicy(AuthorizationPolicies.Authenticated, policy => policy.RequireAuthenticatedUser());
+			options.AddPolicy(
+				AuthorizationPolicies.TermsAccepted,
+				policy => policy.RequireAuthenticatedUser().AddRequirements(new TermsAcceptedRequirement()));
+			options.DefaultPolicy = options.GetPolicy(AuthorizationPolicies.TermsAccepted)!;
+		});
 		services.AddScoped<IAuthorizationHandler, TermsAcceptedHandler>();
 		services.AddSingleton<IAuthorizationMiddlewareResultHandler, ProblemDetailsAuthorizationResultHandler>();
 		services.AddHttpContextAccessor();
