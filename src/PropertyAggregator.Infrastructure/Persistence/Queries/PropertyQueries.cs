@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Common;
@@ -5,11 +6,18 @@ using PropertyAggregator.Application.Features.Api.Properties;
 using PropertyAggregator.Application.Features.Api.Properties.GetPaged;
 using PropertyAggregator.Domain.Enums;
 using PropertyAggregator.Domain.Models;
+using PropertyAggregator.Infrastructure.Persistence.Converters;
 
 namespace PropertyAggregator.Infrastructure.Persistence.Queries;
 
 internal sealed class PropertyQueries(AppDbContext db) : IPropertyQueries
 {
+	private const double MetersPerKilometer = 1000;
+
+	private static readonly string LocalityType = EnumDatabaseValue.For(LocationType.Locality);
+	private static readonly string DistrictType = EnumDatabaseValue.For(LocationType.District);
+	private static readonly string CityPrecision = EnumDatabaseValue.For(LocationPrecision.City);
+
 	public async Task<PropertyResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
 	{
 		Property? property = await db.Properties
@@ -57,7 +65,7 @@ internal sealed class PropertyQueries(AppDbContext db) : IPropertyQueries
 		CancellationToken cancellationToken)
 	{
 		IQueryable<Property> properties = ApplyCriteria(db.Properties.AsNoTracking(), query);
-		properties = await ApplyLocationIdsAsync(properties, query.LocationIds, cancellationToken);
+		properties = await ApplyLocationsAsync(properties, query.LocationIds, query.RadiusKm, cancellationToken);
 
 		int totalCount = await properties.CountAsync(cancellationToken);
 
@@ -150,8 +158,8 @@ internal sealed class PropertyQueries(AppDbContext db) : IPropertyQueries
 		return properties;
 	}
 
-	private async Task<IQueryable<Property>> ApplyLocationIdsAsync(IQueryable<Property> properties,
-		Guid[]? locationIds, CancellationToken cancellationToken)
+	private async Task<IQueryable<Property>> ApplyLocationsAsync(IQueryable<Property> properties,
+		Guid[]? locationIds, int? radiusKm, CancellationToken cancellationToken)
 	{
 		if (locationIds is not { Length: > 0 })
 			return properties;
@@ -170,11 +178,34 @@ internal sealed class PropertyQueries(AppDbContext db) : IPropertyQueries
 		string[] localities = CodesOf(LocationType.Locality);
 		string[] districts = CodesOf(LocationType.District);
 
-		return properties.Where(property =>
+		Expression<Func<Property, bool>> inSelectedLocation = property =>
 			property.VoivodeshipCode != null && voivodeships.Contains(property.VoivodeshipCode)
 			|| property.CountyCode != null && counties.Contains(property.CountyCode)
 			|| property.MunicipalityCode != null && municipalities.Contains(property.MunicipalityCode)
 			|| property.SimcCode != null && localities.Contains(property.SimcCode)
-			|| property.DistrictCode != null && districts.Contains(property.DistrictCode));
+			|| property.DistrictCode != null && districts.Contains(property.DistrictCode);
+
+		if (radiusKm is not { } radius)
+			return properties.Where(inSelectedLocation);
+
+		IQueryable<Guid> matchingIds = db.Properties
+			.Where(inSelectedLocation)
+			.Select(property => property.Id)
+			.Concat(NearbyPropertyIds(locationIds, radius));
+
+		return properties.Where(property => matchingIds.Contains(property.Id));
 	}
+
+	// The radius is measured from the edge of a locality or district, so a big city is covered whole. District
+	// searches skip points geocoded only to the city centre, as those may lie anywhere in the city.
+	private IQueryable<Guid> NearbyPropertyIds(Guid[] locationIds, int radiusKm) =>
+		db.Database.SqlQuery<Guid>(
+			$"""
+			SELECT p."id" AS "Value"
+			FROM "locations" AS l
+			JOIN "properties" AS p ON ST_DWithin(p."location", l."area", {radiusKm * MetersPerKilometer})
+			WHERE l."id" = ANY({locationIds})
+				AND (l."type" = {LocalityType}
+					OR l."type" = {DistrictType} AND p."locationPrecision" <> {CityPrecision})
+			""");
 }

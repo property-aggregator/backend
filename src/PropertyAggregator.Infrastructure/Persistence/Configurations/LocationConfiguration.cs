@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Geometry = NetTopologySuite.Geometries.Geometry;
 using PropertyAggregator.Domain.Models;
 
 namespace PropertyAggregator.Infrastructure.Persistence.Configurations;
@@ -21,6 +22,9 @@ internal sealed class LocationConfiguration : IEntityTypeConfiguration<Location>
 		builder.Property(location => location.Label).HasMaxLength(300);
 		builder.Property(location => location.TercCode).HasMaxLength(7);
 		builder.Property(location => location.SimcCode).HasMaxLength(7);
+
+		// Convex hull of the offers' points, used as the origin of radius searches; read and written by raw SQL only.
+		builder.Property<Geometry>("Area").HasColumnType("geography");
 
 		builder.HasIndex(location => new { location.Type, location.Code }).IsUnique();
 		builder.HasIndex(location => location.NormalizedName);

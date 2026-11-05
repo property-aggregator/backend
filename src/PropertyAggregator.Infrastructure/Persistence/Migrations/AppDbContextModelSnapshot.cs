@@ -33,6 +33,10 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasColumnName("id")
                         .HasDefaultValueSql("gen_random_uuid()");
 
+                    b.Property<Geometry>("Area")
+                        .HasColumnType("geography")
+                        .HasColumnName("area");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(120)
