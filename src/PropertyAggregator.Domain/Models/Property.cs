@@ -55,6 +55,13 @@ public sealed class Property
 	public LocationPrecision? LocationPrecision { get; private set; }
 	public DateTime? GeocodedAt { get; private set; }
 
+	public string? VoivodeshipCode { get; private set; }
+	public string? CountyCode { get; private set; }
+	public string? MunicipalityCode { get; private set; }
+	public string? SimcCode { get; private set; }
+	public string? DistrictCode { get; private set; }
+	public DateTime? LocationMatchedAt { get; private set; }
+
 	public bool IsDeal { get; private set; }
 	public decimal? DealDiscountPercent { get; private set; }
 
@@ -168,7 +175,10 @@ public sealed class Property
 		Street = details.Street;
 
 		if (addressChanged)
+		{
 			ResetLocation();
+			ResetLocationMatch();
+		}
 	}
 
 	private void ResetLocation()
@@ -176,6 +186,16 @@ public sealed class Property
 		Location = null;
 		LocationPrecision = null;
 		GeocodedAt = null;
+	}
+
+	private void ResetLocationMatch()
+	{
+		VoivodeshipCode = null;
+		CountyCode = null;
+		MunicipalityCode = null;
+		SimcCode = null;
+		DistrictCode = null;
+		LocationMatchedAt = null;
 	}
 
 	private void RecalculatePricePerM2() =>

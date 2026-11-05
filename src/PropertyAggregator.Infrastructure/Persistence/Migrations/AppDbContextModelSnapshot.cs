@@ -25,6 +25,84 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "unaccent");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("PropertyAggregator.Domain.Models.Location", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("code");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("isActive");
+
+                    b.Property<bool>("IsCity")
+                        .HasColumnType("boolean")
+                        .HasColumnName("isCity");
+
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("boolean")
+                        .HasColumnName("isHidden");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("label");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NormalizedName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("normalizedName");
+
+                    b.Property<int>("OfferCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("offerCount");
+
+                    b.Property<string>("SimcCode")
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)")
+                        .HasColumnName("simcCode");
+
+                    b.Property<string>("TercCode")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)")
+                        .HasColumnName("tercCode");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id")
+                        .HasName("pK_locations");
+
+                    b.HasIndex("NormalizedName")
+                        .HasDatabaseName("iX_locations_normalizedName");
+
+                    b.HasIndex("Type", "Code")
+                        .IsUnique()
+                        .HasDatabaseName("iX_locations_type_code");
+
+                    b.ToTable("locations", (string)null);
+                });
+
             modelBuilder.Entity("PropertyAggregator.Domain.Models.PriceStatistic", b =>
                 {
                     b.Property<Guid>("Id")
@@ -121,6 +199,11 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("city");
 
+                    b.Property<string>("CountyCode")
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)")
+                        .HasColumnName("countyCode");
+
                     b.Property<decimal?>("DealDiscountPercent")
                         .HasPrecision(5, 2)
                         .HasColumnType("numeric(5,2)")
@@ -130,6 +213,11 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("district");
+
+                    b.Property<string>("DistrictCode")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("districtCode");
 
                     b.Property<DateTime?>("ExpirationCheckRequestedAt")
                         .HasColumnType("timestamp with time zone")
@@ -160,6 +248,10 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasColumnType("geography(Point, 4326)")
                         .HasColumnName("location");
 
+                    b.Property<DateTime?>("LocationMatchedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("locationMatchedAt");
+
                     b.Property<string>("LocationPrecision")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
@@ -174,6 +266,11 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("marketType");
+
+                    b.Property<string>("MunicipalityCode")
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)")
+                        .HasColumnName("municipalityCode");
 
                     b.Property<decimal?>("Price")
                         .HasPrecision(12, 2)
@@ -204,6 +301,11 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("sellerType");
+
+                    b.Property<string>("SimcCode")
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)")
+                        .HasColumnName("simcCode");
 
                     b.Property<string>("SourceId")
                         .IsRequired()
@@ -249,8 +351,19 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
 
+                    b.Property<string>("VoivodeshipCode")
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)")
+                        .HasColumnName("voivodeshipCode");
+
                     b.HasKey("Id")
                         .HasName("pK_properties");
+
+                    b.HasIndex("CountyCode")
+                        .HasDatabaseName("iX_properties_countyCode");
+
+                    b.HasIndex("DistrictCode")
+                        .HasDatabaseName("iX_properties_districtCode");
 
                     b.HasIndex("FirstSeenAt")
                         .HasDatabaseName("ix_properties_deals_firstSeenAt")
@@ -260,6 +373,15 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("iX_properties_location");
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Location"), "gist");
+
+                    b.HasIndex("MunicipalityCode")
+                        .HasDatabaseName("iX_properties_municipalityCode");
+
+                    b.HasIndex("SimcCode")
+                        .HasDatabaseName("iX_properties_simcCode");
+
+                    b.HasIndex("VoivodeshipCode")
+                        .HasDatabaseName("iX_properties_voivodeshipCode");
 
                     b.HasIndex("SourcePortal", "LastSeenAt")
                         .HasDatabaseName("iX_properties_sourcePortal_lastSeenAt")
@@ -276,6 +398,10 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                     b.HasIndex(new[] { "FirstSeenAt" }, "PendingGeocoding")
                         .HasDatabaseName("ix_properties_pendingGeocoding")
                         .HasFilter("\"location\" IS NULL AND \"geocodedAt\" IS NULL");
+
+                    b.HasIndex(new[] { "FirstSeenAt" }, "PendingLocationMatch")
+                        .HasDatabaseName("ix_properties_pendingLocationMatch")
+                        .HasFilter("\"locationMatchedAt\" IS NULL");
 
                     b.ToTable("properties", (string)null);
                 });
@@ -439,6 +565,23 @@ namespace PropertyAggregator.Infrastructure.Persistence.Migrations
                         .HasName("pK_geocodingCache");
 
                     b.ToTable("geocodingCache", (string)null);
+                });
+
+            modelBuilder.Entity("PropertyAggregator.Infrastructure.Locations.LocationDatasetVersion", b =>
+                {
+                    b.Property<string>("Version")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("version");
+
+                    b.Property<DateTime>("ImportedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("importedAt");
+
+                    b.HasKey("Version")
+                        .HasName("pK_locationDatasetVersions");
+
+                    b.ToTable("locationDatasetVersions", (string)null);
                 });
 
             modelBuilder.Entity("PropertyAggregator.Domain.Models.PropertyPriceHistory", b =>

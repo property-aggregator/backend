@@ -5,13 +5,15 @@ namespace PropertyAggregator.Application.Features.Api.Properties.GetPaged;
 
 public sealed class GetPagedQueryValidator : AbstractValidator<GetPagedQuery>
 {
-	private const int MaxLocationLength = 200;
-
 	private const int MaxPage = int.MaxValue / GetPagedQuery.MaxPageSize;
 
 	public GetPagedQueryValidator()
 	{
-		RuleFor(query => query.Location).MaximumLength(MaxLocationLength).WithErrorCode(ValidationCodes.TooLong);
+		RuleFor(query => query.LocationIds!.Length)
+			.LessThanOrEqualTo(GetPagedQuery.MaxLocationIds)
+			.When(query => query.LocationIds is not null)
+			.OverridePropertyName(nameof(GetPagedQuery.LocationIds))
+			.WithErrorCode(ValidationCodes.OutOfRange);
 
 		RuleFor(query => query.PropertyType).IsInEnum().WithErrorCode(ValidationCodes.InvalidValue);
 		RuleFor(query => query.TransactionType).IsInEnum().WithErrorCode(ValidationCodes.InvalidValue);

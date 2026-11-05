@@ -1,19 +1,15 @@
-using System.Globalization;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Common;
 using PropertyAggregator.Application.Features.Api.Properties;
 using PropertyAggregator.Application.Features.Api.Properties.GetPaged;
+using PropertyAggregator.Domain.Enums;
 using PropertyAggregator.Domain.Models;
 
 namespace PropertyAggregator.Infrastructure.Persistence.Queries;
 
 internal sealed class PropertyQueries(AppDbContext db) : IPropertyQueries
 {
-	private const int MaxLocationWords = 5;
-	private static readonly char[] LocationSeparators = [' ', ',', ';', '\t'];
-
 	public async Task<PropertyResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
 	{
 		Property? property = await db.Properties
@@ -61,6 +57,7 @@ internal sealed class PropertyQueries(AppDbContext db) : IPropertyQueries
 		CancellationToken cancellationToken)
 	{
 		IQueryable<Property> properties = ApplyCriteria(db.Properties.AsNoTracking(), query);
+		properties = await ApplyLocationIdsAsync(properties, query.LocationIds, cancellationToken);
 
 		int totalCount = await properties.CountAsync(cancellationToken);
 
@@ -150,39 +147,34 @@ internal sealed class PropertyQueries(AppDbContext db) : IPropertyQueries
 		if (query.MaxRooms is { } maxRooms)
 			properties = properties.Where(property => property.Rooms <= maxRooms);
 
-		return ApplyLocation(properties, query.Location);
-	}
-
-	private static IQueryable<Property> ApplyLocation(IQueryable<Property> properties, string? location)
-	{
-		if (string.IsNullOrWhiteSpace(location))
-			return properties;
-
-		string[] words = RemoveDiacritics(location)
-			.ToLower()
-			.Split(LocationSeparators, StringSplitOptions.RemoveEmptyEntries)
-			.Distinct()
-			.Take(MaxLocationWords)
-			.ToArray();
-
-		foreach (string word in words)
-			properties = properties.Where(property =>
-				property.Province != null && EF.Functions.Unaccent(property.Province).ToLower().Contains(word)
-				|| property.City != null && EF.Functions.Unaccent(property.City).ToLower().Contains(word)
-				|| property.District != null && EF.Functions.Unaccent(property.District).ToLower().Contains(word)
-				|| property.Street != null && EF.Functions.Unaccent(property.Street).ToLower().Contains(word));
-
 		return properties;
 	}
 
-	private static string RemoveDiacritics(string text)
+	private async Task<IQueryable<Property>> ApplyLocationIdsAsync(IQueryable<Property> properties,
+		Guid[]? locationIds, CancellationToken cancellationToken)
 	{
-		StringBuilder result = new(text.Length);
+		if (locationIds is not { Length: > 0 })
+			return properties;
 
-		foreach (char character in text.Replace('ł', 'l').Replace('Ł', 'L').Normalize(NormalizationForm.FormD))
-			if (CharUnicodeInfo.GetUnicodeCategory(character) != UnicodeCategory.NonSpacingMark)
-				result.Append(character);
+		List<Location> selected = await db.Locations
+			.AsNoTracking()
+			.Where(location => locationIds.Contains(location.Id))
+			.ToListAsync(cancellationToken);
 
-		return result.ToString();
+		string[] CodesOf(LocationType type) =>
+			[.. selected.Where(location => location.Type == type).Select(location => location.Code)];
+
+		string[] voivodeships = CodesOf(LocationType.Voivodeship);
+		string[] counties = CodesOf(LocationType.County);
+		string[] municipalities = CodesOf(LocationType.Municipality);
+		string[] localities = CodesOf(LocationType.Locality);
+		string[] districts = CodesOf(LocationType.District);
+
+		return properties.Where(property =>
+			property.VoivodeshipCode != null && voivodeships.Contains(property.VoivodeshipCode)
+			|| property.CountyCode != null && counties.Contains(property.CountyCode)
+			|| property.MunicipalityCode != null && municipalities.Contains(property.MunicipalityCode)
+			|| property.SimcCode != null && localities.Contains(property.SimcCode)
+			|| property.DistrictCode != null && districts.Contains(property.DistrictCode));
 	}
 }

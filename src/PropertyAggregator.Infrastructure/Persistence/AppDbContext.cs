@@ -4,6 +4,7 @@ using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Domain.Enums;
 using PropertyAggregator.Domain.Models;
 using PropertyAggregator.Infrastructure.Geocoding;
+using PropertyAggregator.Infrastructure.Locations;
 using PropertyAggregator.Infrastructure.Persistence.Converters;
 
 namespace PropertyAggregator.Infrastructure.Persistence;
@@ -18,7 +19,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 	public DbSet<User> Users => Set<User>();
 	public DbSet<UserConsent> UserConsents => Set<UserConsent>();
 	public DbSet<UserFavorite> UserFavorites => Set<UserFavorite>();
+	public DbSet<Location> Locations => Set<Location>();
 	internal DbSet<GeocodingCacheEntry> GeocodingCache => Set<GeocodingCacheEntry>();
+	internal DbSet<LocationDatasetVersion> LocationDatasetVersions => Set<LocationDatasetVersion>();
 
 	public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
 	{
@@ -58,6 +61,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 			.HaveMaxLength(EnumMaxLength);
 		configurationBuilder.Properties<LocationPrecision>()
 			.HaveConversion<LowercaseEnumConverter<LocationPrecision>>()
+			.HaveMaxLength(EnumMaxLength);
+		configurationBuilder.Properties<LocationType>()
+			.HaveConversion<LowercaseEnumConverter<LocationType>>()
 			.HaveMaxLength(EnumMaxLength);
 		configurationBuilder.Properties<ConsentType>()
 			.HaveConversion<LowercaseEnumConverter<ConsentType>>()

@@ -5,6 +5,7 @@ using PropertyAggregator.Application.Abstractions;
 using PropertyAggregator.Application.Common.Validation;
 using PropertyAggregator.Infrastructure.Geocoding;
 using PropertyAggregator.Infrastructure.Http;
+using PropertyAggregator.Infrastructure.Locations;
 using PropertyAggregator.Infrastructure.Persistence;
 using PropertyAggregator.Infrastructure.Persistence.Queries;
 using PropertyAggregator.Infrastructure.Persistence.Repositories;
@@ -60,6 +61,9 @@ public static class DependencyInjection
 		services.AddScoped<IPropertyRepository, PropertyRepository>();
 		services.AddScoped<IPropertyQueries, PropertyQueries>();
 		services.AddScoped<IUserRepository, UserRepository>();
+		services.AddScoped<ILocationRepository, LocationRepository>();
+		services.AddScoped<ILocationQueries, LocationQueries>();
+		services.AddSingleton<ILocationDataset, TerytLocationDataset>();
 
 		services.AddScoped<IPriceStatisticsRepository, PriceStatisticsRepository>();
 

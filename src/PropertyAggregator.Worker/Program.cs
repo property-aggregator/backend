@@ -17,6 +17,7 @@ builder.Services.AddHostedService<ExpirationResponseConsumer>();
 builder.Services.AddHostedService<GeocodingJob>();
 builder.Services.AddHostedService<OfferExpirationJob>();
 builder.Services.AddHostedService<PriceStatisticsJob>();
+builder.Services.AddHostedService<LocationSyncJob>();
 
 IHost host = builder.Build();
 host.Run();

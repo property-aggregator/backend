@@ -19,4 +19,9 @@
 	  <Folder Include="Persistence\Migrations\" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<EmbeddedResource Include="Locations\Data\TERC_Urzedowy_*.csv" LogicalName="Teryt.TERC.csv" />
+		<EmbeddedResource Include="Locations\Data\SIMC_Urzedowy_*.csv" LogicalName="Teryt.SIMC.csv" />
+	</ItemGroup>
+
 </Project>
