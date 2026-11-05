@@ -30,6 +30,11 @@ internal sealed class PropertyConfiguration : IEntityTypeConfiguration<Property>
 		builder.Property(property => property.Location)
 			.HasConversion<GeoPointConverter>()
 			.HasColumnType("geography(Point, 4326)");
+		builder.Property(property => property.VoivodeshipCode).HasMaxLength(2);
+		builder.Property(property => property.CountyCode).HasMaxLength(4);
+		builder.Property(property => property.MunicipalityCode).HasMaxLength(7);
+		builder.Property(property => property.SimcCode).HasMaxLength(7);
+		builder.Property(property => property.DistrictCode).HasMaxLength(120);
 
 		builder.Property(property => property.DealDiscountPercent).HasPrecision(5, 2);
 
@@ -54,6 +59,16 @@ internal sealed class PropertyConfiguration : IEntityTypeConfiguration<Property>
 		builder.HasIndex(property => property.FirstSeenAt, "PendingGeocoding")
 			.HasDatabaseName("ix_properties_pendingGeocoding")
 			.HasFilter("\"location\" IS NULL AND \"geocodedAt\" IS NULL");
+
+		builder.HasIndex(property => property.FirstSeenAt, "PendingLocationMatch")
+			.HasDatabaseName("ix_properties_pendingLocationMatch")
+			.HasFilter("\"locationMatchedAt\" IS NULL");
+
+		builder.HasIndex(property => property.VoivodeshipCode);
+		builder.HasIndex(property => property.CountyCode);
+		builder.HasIndex(property => property.MunicipalityCode);
+		builder.HasIndex(property => property.SimcCode);
+		builder.HasIndex(property => property.DistrictCode);
 
 		builder.HasIndex(property => new { property.SourcePortal, property.LastSeenAt })
 			.HasFilter("\"archivedAt\" IS NULL");

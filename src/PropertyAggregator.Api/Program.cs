@@ -40,6 +40,7 @@ app.MapDefaultEndpoints();
 app.MapPropertyEndpoints();
 app.MapUserEndpoints();
 app.MapFavoriteEndpoints();
+app.MapLocationEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
