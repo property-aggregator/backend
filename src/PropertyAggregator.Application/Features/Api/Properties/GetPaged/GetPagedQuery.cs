@@ -8,6 +8,7 @@ public sealed record GetPagedQuery(
 	MarketType? MarketType = null,
 	bool? IsArchived = null,
 	Guid[]? LocationIds = null,
+	int? RadiusKm = null,
 	decimal? MinPrice = null,
 	decimal? MaxPrice = null,
 	decimal? MinAreaM2 = null,
@@ -21,4 +22,5 @@ public sealed record GetPagedQuery(
 	public const int DefaultPageSize = 20;
 	public const int MaxPageSize = 100;
 	public const int MaxLocationIds = 25;
+	public const int MaxRadiusKm = 100;
 }

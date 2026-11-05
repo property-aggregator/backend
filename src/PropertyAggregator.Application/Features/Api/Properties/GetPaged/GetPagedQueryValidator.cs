@@ -14,6 +14,13 @@ public sealed class GetPagedQueryValidator : AbstractValidator<GetPagedQuery>
 			.When(query => query.LocationIds is not null)
 			.OverridePropertyName(nameof(GetPagedQuery.LocationIds))
 			.WithErrorCode(ValidationCodes.OutOfRange);
+		RuleFor(query => query.RadiusKm)
+			.InclusiveBetween(1, GetPagedQuery.MaxRadiusKm)
+			.WithErrorCode(ValidationCodes.OutOfRange);
+		RuleFor(query => query.RadiusKm)
+			.Null()
+			.When(query => query.LocationIds is not { Length: > 0 })
+			.WithErrorCode(ValidationCodes.RadiusRequiresLocation);
 
 		RuleFor(query => query.PropertyType).IsInEnum().WithErrorCode(ValidationCodes.InvalidValue);
 		RuleFor(query => query.TransactionType).IsInEnum().WithErrorCode(ValidationCodes.InvalidValue);

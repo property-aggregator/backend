@@ -15,6 +15,7 @@ internal sealed class LocationRepository(AppDbContext db) : ILocationRepository
 	private static readonly string Municipality = EnumDatabaseValue.For(LocationType.Municipality);
 	private static readonly string Locality = EnumDatabaseValue.For(LocationType.Locality);
 	private static readonly string District = EnumDatabaseValue.For(LocationType.District);
+	private static readonly string CityPrecision = EnumDatabaseValue.For(LocationPrecision.City);
 
 	public Task<bool> IsImportedAsync(string version, CancellationToken cancellationToken) =>
 		db.LocationDatasetVersions.AnyAsync(entry => entry.Version == version, cancellationToken);
@@ -188,6 +189,33 @@ internal sealed class LocationRepository(AppDbContext db) : ILocationRepository
 			FROM "locations" AS current
 			LEFT JOIN counts AS c ON c."type" = current."type" AND c."code" = current."code"
 			WHERE l."id" = current."id" AND l."offerCount" <> COALESCE(c."total", 0)
+			""",
+			cancellationToken);
+
+	// Points geocoded only to the city centre say nothing about where a district lies, so they are left out of
+	// district areas. Archived offers are included to keep the areas stable.
+	public Task RefreshAreasAsync(CancellationToken cancellationToken) =>
+		db.Database.ExecuteSqlAsync(
+			$"""
+			WITH areas AS (
+				SELECT {Locality} AS "type", "simcCode" AS "code",
+					ST_ConvexHull(ST_Collect("location"::geometry))::geography AS "area"
+				FROM "properties"
+				WHERE "simcCode" IS NOT NULL AND "location" IS NOT NULL
+				GROUP BY "simcCode"
+				UNION ALL
+				SELECT {District}, "districtCode",
+					ST_ConvexHull(ST_Collect("location"::geometry))::geography
+				FROM "properties"
+				WHERE "districtCode" IS NOT NULL AND "location" IS NOT NULL AND "locationPrecision" <> {CityPrecision}
+				GROUP BY "districtCode"
+			)
+			UPDATE "locations" AS l
+			SET "area" = a."area"
+			FROM areas AS a
+			WHERE l."type" = a."type"
+				AND l."code" = a."code"
+				AND ST_AsBinary(l."area") IS DISTINCT FROM ST_AsBinary(a."area")
 			""",
 			cancellationToken);
 

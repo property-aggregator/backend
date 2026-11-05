@@ -28,5 +28,6 @@ public sealed class SyncLocationsHandler(
 
 		await locations.RefreshDistrictsAsync(cancellationToken);
 		await locations.RefreshOfferCountsAsync(cancellationToken);
+		await locations.RefreshAreasAsync(cancellationToken);
 	}
 }

@@ -12,4 +12,6 @@ public interface ILocationRepository
 	Task RefreshDistrictsAsync(CancellationToken cancellationToken);
 
 	Task RefreshOfferCountsAsync(CancellationToken cancellationToken);
+
+	Task RefreshAreasAsync(CancellationToken cancellationToken);
 }
